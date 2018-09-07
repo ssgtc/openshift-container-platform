@@ -395,9 +395,9 @@
 		"infraLbHttpProbeId": "[concat(variables('infraLbId'),'/probes/httpProbe')]",
 		"infraLbHttpsProbeId": "[concat(variables('infraLbId'),'/probes/httpsProbe')]",
 		"imageReference": {
-			"publisher": "Redhat",
-			"offer": "RHEL-OCP",
-			"sku": "7-4",
+			"publisher": "RedHat",
+			"offer": "RHEL",
+			"sku": "7.4",
 			"version": "latest"
 		},
 		"redHatTags": {
