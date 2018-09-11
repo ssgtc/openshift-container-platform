@@ -137,6 +137,7 @@
 				"version": "[parameters('redHatTags').version]",
 				"platform": "[parameters('redHatTags').platform]"
 		},
+		"plan": {},
 		"properties": {
 			"hardwareProfile": {
 				"vmSize": "[parameters('vmSize')]"
