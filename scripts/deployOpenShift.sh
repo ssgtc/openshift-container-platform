@@ -209,7 +209,7 @@ $cnsgroup
 
 [new_nodes]
 EOF
-
+: '
 #echo $(date) " - Running network_manager.yml playbook"
 DOMAIN=`domainname -d`
 
@@ -227,8 +227,6 @@ runuser -l $SUDOUSER -c "ansible all -f 10 -b -m yum -a \"name=* state=latest\""
 # Install Ansible on all hosts
 echo $(date) " - Install ansible on all hosts with dependancies"
 runuser -l $SUDOUSER -c "ansible all -f 10 -b -m yum -a \"name=ansible state=latest\""
-
-: '
 
 # Initiating installation of OpenShift Container Platform prerequisites using Ansible Playbook
 echo $(date) " - Running Prerequisites via Ansible Playbook"
