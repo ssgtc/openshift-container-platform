@@ -209,7 +209,7 @@ $cnsgroup
 
 [new_nodes]
 EOF
-: '
+
 #echo $(date) " - Running network_manager.yml playbook"
 DOMAIN=`domainname -d`
 
@@ -441,5 +441,5 @@ rm -rf /home/${SUDOUSER}/openshift-container-platform-playbooks
 echo $(date) "- Sleep for 30"
 
 sleep 30
-'
+
 echo $(date) " - Script complete"
