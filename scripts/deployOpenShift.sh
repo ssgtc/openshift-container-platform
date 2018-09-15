@@ -40,6 +40,8 @@ echo $(date) " - Configuring SSH ControlPath to use shorter path name"
 sed -i -e "s/^# control_path = %(directory)s\/%%h-%%r/control_path = %(directory)s\/%%h-%%r/" /etc/ansible/ansible.cfg
 sed -i -e "s/^#host_key_checking = False/host_key_checking = False/" /etc/ansible/ansible.cfg
 sed -i -e "s/^#pty=False/pty=False/" /etc/ansible/ansible.cfg
+sed -i -e "s/^#stdout_callback = skippy/stdout_callback = skippy/" /etc/ansible/ansible.cfg
+sed -i -e "s/^#pipelining = False/pipelining = True/" /etc/ansible/ansible.cfg
 
 # Create Ansible Playbooks for Post Installation tasks
 echo $(date) " - Create Ansible Playbooks for Post Installation tasks"
