@@ -223,17 +223,17 @@ echo $(date) " - Setting up NetworkManager on eth0"
 runuser -l $SUDOUSER -c "ansible all -b -m service -a \"name=NetworkManager state=restarted\""
 
 # Updating all hosts
-echo $(date) " - Updating rpms on all hosts to latest release"
-runuser -l $SUDOUSER -c "ansible all -f 10 -b -m yum -a \"name=* state=latest\""
+#echo $(date) " - Updating rpms on all hosts to latest release"
+#runuser -l $SUDOUSER -c "ansible all -f 10 -b -m yum -a \"name=* state=latest\""
 
 # Install Ansible on all hosts
 echo $(date) " - Install ansible on all hosts with dependancies"
 runuser -l $SUDOUSER -c "ansible all -f 10 -b -m yum -a \"name=ansible state=latest\""
 
 # Reboot all hosts before performing installation
-echo $(date) " - Reboot all hosts before performing installation"
-runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-master.yaml"
-runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-nodes.yaml"
+#echo $(date) " - Reboot all hosts before performing installation"
+#runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-master.yaml"
+#runuser -l $SUDOUSER -c "ansible-playbook -f 10 ~/openshift-container-platform-playbooks/reboot-nodes.yaml"
 
 # Initiating installation of OpenShift Container Platform prerequisites using Ansible Playbook
 echo $(date) " - Running Prerequisites via Ansible Playbook"
