@@ -314,64 +314,92 @@
 		  "type": "string",
 		  "defaultValue": "[resourceGroup().name]",
 		  "metadata": {
-			"description": "Name of the resource group for the existing virtual network"
+			"description": "Name of the resource group for the new virtual network"
 		  }
 		},
 		"virtualNetworkName": {
 		  "type": "string",
 		  "defaultValue": "openshiftvnet",
 		  "metadata": {
-			"description": "Name of the virtual network"
+			"description": "Name of the new virtual network"
 		  }
 		},
 		"addressPrefixes": {
 		  "type": "string",
 		  "defaultValue": "10.0.0.0/14",
 		  "metadata": {
-			"description": "Address prefix of the virtual network"
+			"description": "Address prefix of the new virtual network"
 		  }
 		},
 		"masterSubnetName": {
 		  "type": "string",
 		  "defaultValue": "mastersubnet",
 		  "metadata": {
-			"description": "Name of the subnet"
+			"description": "Name of the subnet for Master nodes and Bastion node"
 		  }
 		},
 		"masterSubnetPrefix": {
 			"type": "string",
 			"defaultValue": "10.1.0.0/16",
 			"metadata": {
-				"description": "Base subnet used for the master servers, and needs to be a subset of the addressPrefix - default is 10.1.0.0/16"
+				"description": "CIDR used for the master subnet - needs to be a subset of the addressPrefix - default is 10.1.0.0/16"
 			}
 		},
 		"infraSubnetName": {
 		  "type": "string",
-		  "defaultValue": "mastersubnet",
+		  "defaultValue": "infrasubnet",
 		  "metadata": {
-			"description": "Name of the subnet"
+			"description": "Name of the subnet for Infra nodes"
 		  }
 		},
 		"infraSubnetPrefix": {
 			"type": "string",
-			"defaultValue": "10.3.0.0/16",
+			"defaultValue": "10.2.0.0/16",
 			"metadata": {
-				"description": "Base subnet used for the master servers, and needs to be a subset of the addressPrefix - default is 10.1.0.0/16"
+				"description": "CIDR used for the infra subnet - needs to be a subset of the addressPrefix - default is 10.2.0.0/16"
 			}
 		},
 		"nodeSubnetName": {
 			"type": "string",
 			"defaultValue": "nodesubnet",
 			"metadata": {
-				"description": "Name of the subnet"
+				"description": "Name of the subnet for Compute and CNS nodes"
 		  }
 		},
 		"nodeSubnetPrefix": {
 			"type": "string",
-			"defaultValue": "10.2.0.0/16",
+			"defaultValue": "10.3.0.0/16",
 			"metadata": {
-				"description": "Base subnet used for the infra, node, and CNS servers, and needs to be a subset of the addressPrefix - default is 10.2.0.0/16"
+				"description": "CIDR used for the node subnet - needs to be a subset of the addressPrefix - default is 10.3.0.0/16"
 			}
+		},
+		"existingMasterSubnetReference": {
+		  "type": "string",
+		  "defaultValue": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/mastersubnet",
+		  "metadata": {
+			"description": "Full reference to existing subnet for Master nodes"
+		  }
+		},
+		"existingInfraSubnetReference": {
+		  "type": "string",
+		  "defaultValue": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/infrasubnet",
+		  "metadata": {
+			"description": "Full reference to existing subnet for Infra nodes"
+		  }
+		},
+		"existingCnsSubnetReference": {
+		  "type": "string",
+		  "defaultValue": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/cnssubnet",
+		  "metadata": {
+			"description": "Full reference to existing subnet for CNS nodes"
+		  }
+		},
+		"existingNodeSubnetReference": {
+		  "type": "string",
+		  "defaultValue": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/nodesubnet",
+		  "metadata": {
+			"description": "Full reference to existing subnet for Compute nodes"
+		  }
 		},
 		"masterClusterType": {
 			"type": "string",
@@ -409,7 +437,7 @@
 		},
 		"routerPrivateClusterIp": {
 			"type": "string",
-			"defaultValue": "10.1.0.201",
+			"defaultValue": "10.2.0.201",
 			"metadata": {
 				"description": "Static Private IP address to use for infra load balancer when creating a cluster with private infra nodes"
 			}
@@ -544,7 +572,7 @@
 			"privateIPAddress": "[parameters('masterPrivateClusterIp')]",
 			"privateIPAllocationMethod": "Static",
 			"subnet": {
-				"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName'))]"
+				"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
 			}
 		},
 		"publicMasterFrontEndIpConfigurationProperties": {
@@ -557,7 +585,7 @@
 			"privateIPAddress": "[parameters('routerPrivateClusterIp')]",
 			"privateIPAllocationMethod": "Static",
 			"subnet": {
-				"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName'))]"
+				"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('infraSubnetName')), parameters('existingInfraSubnetReference'))]"
 			}
 		},
 		"publicInfraFrontEndIpConfigurationProperties": {
@@ -1518,7 +1546,7 @@
 							"id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/publicIPAddresses/', variables('bastionPublicIp'))]"
 						},
 						"subnet": {
-							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName'))]"
+							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
 						}
 					}
 				}],
@@ -1554,7 +1582,7 @@
 					"properties": {
 						"privateIPAllocationMethod": "Dynamic",
 						"subnet": {
-							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName'))]"
+							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
 						},
 						"loadBalancerBackendAddressPools": [{
 							"id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName'), '/backendAddressPools/loadBalancerBackEnd')]"
@@ -1593,7 +1621,7 @@
 					"properties": {
 						"privateIPAllocationMethod": "Dynamic",
 						"subnet": {
-							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('infraSubnetName'))]"
+							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('infraSubnetName')), parameters('existingInfraSubnetReference'))]"
 						},
 						"loadBalancerBackendAddressPools": [{
 							"id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('infraLoadBalancerName'), '/backendAddressPools/loadBalancerBackEnd')]"
@@ -1632,7 +1660,7 @@
 					"properties": {
 						"privateIPAllocationMethod": "Dynamic",
 						"subnet": {
-							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('nodeSubnetName'))]"
+							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('nodeSubnetName')), parameters('existingCnsSubnetReference'))]"
 						}
 					}
 				}],
@@ -1667,7 +1695,7 @@
 					"properties": {
 						"privateIPAllocationMethod": "Dynamic",
 						"subnet": {
-							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('nodeSubnetName'))]"
+							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('nodeSubnetName')), parameters('existingNodeSubnetReference'))]"
 						}
 					}
 				}],
