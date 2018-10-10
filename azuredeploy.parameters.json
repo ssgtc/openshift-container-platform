@@ -118,11 +118,29 @@
 		"masterSubnetPrefix": {
 			"value": "10.1.0.0/16"
 		},
+		"infraSubnetName": {
+			"value": "changeme"
+		},
+		"infraSubnetPrefix": {
+			"value": "10.2.0.0/16"
+		},
 		"nodeSubnetName": {
 			"value": "changeme"
 		},
 		"nodeSubnetPrefix": {
-			"value": "10.2.0.0/16"
+			"value": "10.3.0.0/16"
+		},
+		"existingMasterSubnetReference": {
+			"value": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/mastersubnet"
+		},
+		"existingInfraSubnetReference": {
+			"value": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/masterinfrasubnet"
+		},
+		"existingCnsSubnetReference": {
+			"value": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/cnssubnet"
+		},
+		"existingNodeSubnetReference": {
+			"value": "/subscriptions/abc686f6-963b-4e64-bff4-99dc369ab1cd/resourceGroups/vnetresourcegroup/providers/Microsoft.Network/virtualNetworks/openshiftvnet/subnets/nodesubnet"
 		},
 		"masterClusterType": {
 			"value": "public"
@@ -137,7 +155,7 @@
 			"value": "public"
 		},
 		"routerPrivateClusterIp": {
-			"value": "10.1.0.201"
+			"value": "10.2.0.201"
 		}
 	}
 }
