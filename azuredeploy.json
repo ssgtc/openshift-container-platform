@@ -2307,6 +2307,7 @@
 				}
 			}
 		}, {
+			"condition": "[variables('runScriptExtensions')]",
 			"type": "Microsoft.Compute/virtualMachines/extensions",
 			"name": "[concat(variables('openshiftNodeHostname'), '-', copyIndex(), '/prepNodes')]",
 			"location": "[variables('location')]",
@@ -2340,6 +2341,7 @@
 				}
 			}
 		}, {
+			"condition": "[variables('runScriptExtensions')]",
 			"name": "OpenShiftDeployment",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('apiVersionLinkTemplate')]",
