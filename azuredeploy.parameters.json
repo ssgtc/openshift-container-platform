@@ -124,6 +124,12 @@
 		"nodeSubnetPrefix": {
 			"value": "10.2.0.0/16"
 		},
+		"infraSubnetName": {
+			"value": "infrasubnet"
+		},
+		"infraSubnetPrefix": {
+			"value": "10.3.0.0/16"
+		},
 		"masterClusterType": {
 			"value": "public"
 		},
