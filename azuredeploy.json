@@ -335,28 +335,42 @@
 		  "type": "string",
 		  "defaultValue": "mastersubnet",
 		  "metadata": {
-			"description": "Name of the subnet"
+			"description": "Name of the subnet for master nodes"
 		  }
 		},
 		"masterSubnetPrefix": {
 			"type": "string",
 			"defaultValue": "10.1.0.0/16",
 			"metadata": {
-				"description": "Base subnet used for the master servers, and needs to be a subset of the addressPrefix - default is 10.1.0.0/16"
+				"description": "Base subnet used for the master nodes, and needs to be a subset of the addressPrefix - default is 10.1.0.0/16"
 			}
 		},
 		"nodeSubnetName": {
 			"type": "string",
 			"defaultValue": "nodesubnet",
 			"metadata": {
-				"description": "Name of the subnet"
+				"description": "Name of the subnet compute nodes"
 		  }
 		},
 		"nodeSubnetPrefix": {
 			"type": "string",
 			"defaultValue": "10.2.0.0/16",
 			"metadata": {
-				"description": "Base subnet used for the infra, node, and CNS servers, and needs to be a subset of the addressPrefix - default is 10.2.0.0/16"
+				"description": "Base subnet used for the compute nodes, and CNS nodes, and needs to be a subset of the addressPrefix - default is 10.2.0.0/16"
+			}
+		},
+		"infraSubnetName": {
+			"type": "string",
+			"defaultValue": "infrasubnet",
+			"metadata": {
+				"description": "Name of the subnet for infra nodes"
+		  }
+		},
+		"infraSubnetPrefix": {
+			"type": "string",
+			"defaultValue": "10.3.0.0/16",
+			"metadata": {
+				"description": "Base subnet used for the infra nodes default is 10.3.0.0/16"
 			}
 		},
 		"masterClusterType": {
@@ -516,9 +530,6 @@
 		"nodeOsUri": "[concat(parameters('storageKind'), 'NodeOsUri')]",
 		"nodeDataUri": "[concat(parameters('storageKind'), 'NodeDataUri')]",
 		"cnsUri": "[concat(parameters('storageKind'), 'CnsUri')]",
-		"virtualNetworkName": "openshiftvnet",
-		"masterSubnetName": "mastersubnet",
-		"nodeSubnetName": "nodesubnet",
 		"bastionPublicIp": "bastionpublicip",
 		"bastionPublicIpDnsLabel": "[concat('bastiondns', uniqueString(resourceGroup().id))]",
 		"infraLbPublicIpDnsLabel": "[concat('infradns', uniqueString(concat(resourceGroup().id, 'infra')))]",
@@ -1225,6 +1236,11 @@
 					"properties": {
 						"addressPrefix": "[parameters('nodeSubnetPrefix')]"
 					}
+				}, {
+					"name": "[parameters('infraSubnetName')]",
+					"properties": {
+						"addressPrefix": "[parameters('infraSubnetPrefix')]"
+					}
 				}]
 			}
 		}, {
@@ -1606,7 +1622,7 @@
 					"properties": {
 						"privateIPAllocationMethod": "Dynamic",
 						"subnet": {
-							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName'))]"
+							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('infraSubnetName'))]"
 						},
 						"loadBalancerBackendAddressPools": [{
 							"id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('infraLoadBalancerName'), '/backendAddressPools/loadBalancerBackEnd')]"
@@ -1645,7 +1661,7 @@
 					"properties": {
 						"privateIPAllocationMethod": "Dynamic",
 						"subnet": {
-							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName'))]"
+							"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('nodeSubnetName'))]"
 						}
 					}
 				}],
