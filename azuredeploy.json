@@ -599,6 +599,7 @@
 		"glusterDiskSize": 128,
 		"cnsInstanceCount": 3,
 		"singlequote": "'",
+		"runScriptExtensions": false,
 		"sshKeyPath": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
 		"bastionPrepScriptUrl": "[concat(parameters('_artifactsLocation'), '/scripts/bastionPrep.sh')]",
 		"nodePrepScriptUrl": "[concat(parameters('_artifactsLocation'), '/scripts/nodePrep.sh')]",
@@ -2149,6 +2150,7 @@
 				}
 			}
 		}, {
+			"condition": "[variables('runScriptExtensions')]",
 			"name": "bastionPrep",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "[variables('apiVersionLinkTemplate')]",
@@ -2203,6 +2205,7 @@
 				}
 			}
 		}, {
+			"condition": "[variables('runScriptExtensions')]",
 			"type": "Microsoft.Compute/virtualMachines/extensions",
 			"name": "[concat(variables('openshiftMasterHostname'), '-', copyIndex(), '/prepMasters')]",
 			"location": "[variables('location')]",
@@ -2236,6 +2239,7 @@
 				}
 			}
 		}, {
+			"condition": "[variables('runScriptExtensions')]",
 			"type": "Microsoft.Compute/virtualMachines/extensions",
 			"name": "[concat(variables('openshiftInfraHostname'), '-', copyIndex(), '/prepNodes')]",
 			"location": "[variables('location')]",
@@ -2269,9 +2273,9 @@
 				}
 			}
 		}, {
+			"condition": "[[variables('runScriptExtensions')]]",
 			"type": "Microsoft.Compute/virtualMachines/extensions",
 			"name": "[concat(variables('openshiftCnsHostname'), '-', copyIndex(), '/prepNodes')]",
-			"condition": "[equals(parameters('enableCNS'), 'true')]",
 			"location": "[variables('location')]",
 			"apiVersion": "[variables('apiVersionCompute')]",
 			"tags": {
