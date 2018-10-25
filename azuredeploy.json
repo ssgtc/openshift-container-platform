@@ -90,6 +90,18 @@
 				"description": "Use Managed or Unmanaged Disks"
 			}
 		},
+		"rhelOsImage": {
+			"type": "object",
+			"defaultValue": {
+				"publisher": "RedHat",
+				"offer": "RHEL",
+				"sku": "7.4",
+				"version": "latest"
+			},
+			"metadata": {
+				"description": "Enter the appropriate publisher, offer, sku and version values for the appropriate RHEL image in your Azure Stack"
+			}
+		},
 		"openshiftClusterPrefix": {
 			"type": "string",
 			"defaultValue": "mycluster",
@@ -394,12 +406,7 @@
 		"infraLbBackendPoolId": "[concat(variables('infraLbId'),'/backendAddressPools/loadBalancerBackend')]",
 		"infraLbHttpProbeId": "[concat(variables('infraLbId'),'/probes/httpProbe')]",
 		"infraLbHttpsProbeId": "[concat(variables('infraLbId'),'/probes/httpsProbe')]",
-		"imageReference": {
-			"publisher": "RedHat",
-			"offer": "RHEL",
-			"sku": "7.4",
-			"version": "latest"
-		},
+		"imageReference": "[parameters('rhelOsImage')]"
 		"redHatTags": {
 			"app": "OpenShiftContainerPlatform",
 			"version": "3.9",

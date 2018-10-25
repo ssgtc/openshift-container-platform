@@ -17,6 +17,14 @@
 		"storageKind": {
 			"value": "unmanaged"
 		},
+		"rhelOsImage": {
+			"value": {
+				"publisher": "RedHat",
+				"offer": "RHEL",
+				"sku": "7-RAW",
+				"version": "latest"
+			}
+		},
 		"openshiftClusterPrefix": {
 			"value": "ocpcluster"
 		},
