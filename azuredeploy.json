@@ -2273,7 +2273,7 @@
 				}
 			}
 		}, {
-			"condition": "[[variables('runScriptExtensions')]]",
+			"condition": "[variables('runScriptExtensions')]",
 			"type": "Microsoft.Compute/virtualMachines/extensions",
 			"name": "[concat(variables('openshiftCnsHostname'), '-', copyIndex(), '/prepNodes')]",
 			"location": "[variables('location')]",
