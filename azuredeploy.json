@@ -406,7 +406,7 @@
 		"infraLbBackendPoolId": "[concat(variables('infraLbId'),'/backendAddressPools/loadBalancerBackend')]",
 		"infraLbHttpProbeId": "[concat(variables('infraLbId'),'/probes/httpProbe')]",
 		"infraLbHttpsProbeId": "[concat(variables('infraLbId'),'/probes/httpsProbe')]",
-		"imageReference": "[parameters('rhelOsImage')]"
+		"imageReference": "[parameters('rhelOsImage')]",
 		"redHatTags": {
 			"app": "OpenShiftContainerPlatform",
 			"version": "3.9",
