@@ -569,7 +569,7 @@
 			"privateIPAddress": "[parameters('routerPrivateClusterIp')]",
 			"privateIPAllocationMethod": "Static",
 			"subnet": {
-				"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName'))]"
+				"id": "[resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('infraSubnetName'))]"
 			}
 		},
 		"publicInfraFrontEndIpConfigurationProperties": {
