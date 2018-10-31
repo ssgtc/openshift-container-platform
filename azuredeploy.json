@@ -1304,6 +1304,8 @@
 			"type": "Microsoft.Network/virtualNetworks",
 			"name": "[parameters('virtualNetworkName')]",
 			"location": "[variables('location')]",
+			"resourceGroup": "openshift",
+			"subscriptionId": "295a325e-8276-4dda-af8f-33df5658eb38",
 			"tags": {
 				"displayName": "VirtualNetwork",
 				"provider": "[variables('redHatTags').provider]",
