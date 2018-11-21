@@ -38,24 +38,6 @@
 				"description": "VM Size"
 			}
 		},
-		"osImageType": {
-			"type": "string",
-			"metadata": {
-				"description": "OpenShift OS image type. 'defaultgallery' will use the on demand RHEL image. 'marketplace' allows you to define a third party marketplace image to use."
-			}
-		},
-		"marketplaceOsImage": {
-			"type": "object",
-			"metadata": {
-				"description": "Enter the appropriate publisher, offer, sku and version values for the appropriate marketplace image you want to use."
-			}
-		},
-		"marketplacePlan": {
-			"type": "object",
-			"metadata": {
-				"description": "Plan object for marketplace offer."
-			}
-		},
 		"availabilitySet": {
 			"type": "string",
 			"metadata": {
@@ -143,7 +125,7 @@
 	},
 	"variables": {
 		"managedStorageProfile": {
-			"imageReference": "[if(equals(parameters('osImageType'), 'marketplace'), parameters('marketplaceOsImage'), parameters('imageReference'))]",
+			"imageReference": "[parameters('imageReference')]",
 			"osDisk": {
 				"name": "[concat(parameters('hostName'), '-osdisk')]",
 				"managedDisk": {
@@ -165,7 +147,7 @@
 			}]
 		},
 		"unmanagedStorageProfile": {
-			"imageReference": "[if(equals(parameters('osImageType'), 'marketplace'), parameters('marketplaceOsImage'), parameters('imageReference'))]",
+			"imageReference": "[parameters('imageReference')]",
 			"osDisk": {
 				"name": "[concat(parameters('hostName'), '-osdisk')]",
 				"vhd": {
@@ -199,7 +181,6 @@
 				"version": "[parameters('redHatTags').version]",
 				"platform": "[parameters('redHatTags').platform]"
 		},
-		"plan": "[if(equals(parameters('osImageType'), 'marketplace'), parameters('marketplacePlan'), json('null'))]",
 		"properties": {
 			"availabilitySet": {
 				"id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySet'))]"
