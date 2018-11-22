@@ -92,7 +92,7 @@ fi
     # az login --service-principal -u $AADCLIENTID -p $AADCLIENTSECRET -t $TENANTID
     # az account set -s $SUBSCRIPTIONID
 
-    Adding Storage Extension
+    # Adding Storage Extension
     # az extension add --name storage-preview
 # fi
 
