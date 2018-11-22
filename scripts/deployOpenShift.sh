@@ -86,15 +86,15 @@ else
 fi
 
 # Logging into Azure CLI
-if [ "$AADCLIENTID" != "" ]
-then
-    echo $(date) " - Logging into Azure CLI"
-    az login --service-principal -u $AADCLIENTID -p $AADCLIENTSECRET -t $TENANTID
-    az account set -s $SUBSCRIPTIONID
+# if [ "$AADCLIENTID" != "" ]
+# then
+    # echo $(date) " - Logging into Azure CLI"
+    # az login --service-principal -u $AADCLIENTID -p $AADCLIENTSECRET -t $TENANTID
+    # az account set -s $SUBSCRIPTIONID
 
-    # Adding Storage Extension
-    az extension add --name storage-preview
-fi
+    Adding Storage Extension
+    # az extension add --name storage-preview
+# fi
 
 # Setting the default openshift_cloudprovider_kind if Azure enabled
 if [[ $AZURE == "true" ]]
