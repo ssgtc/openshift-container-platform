@@ -8,11 +8,11 @@
 				"description": "Base URL for Template Files",
 				"artifactsBaseUrl": ""
 			},
-			"defaultValue": "https://raw.githubusercontent.com/Microsoft/openshift-container-platform/azurestack-release-3.11"
+			"defaultValue": "https://raw.githubusercontent.com/haroldwongms/openshift-container-platform/update311"
 		},
 		"masterVmSize": {
 			"type": "string",
-			"defaultValue": "Standard_E2s_v3",
+			"defaultValue": "Standard_DS2_v2",
 			"allowedValues": [
 				"Standard_A4", "Standard_A5", "Standard_A6", "Standard_A7", "Standard_A8", "Standard_A9", "Standard_A10", "Standard_A11",
 				"Standard_D2", "Standard_D3", "Standard_D4",
@@ -36,7 +36,7 @@
 		},
 		"infraVmSize": {
 			"type": "string",
-			"defaultValue": "Standard_D4s_v3",
+			"defaultValue": "Standard_DS2_v2",
 			"allowedValues": [
 				"Standard_A4", "Standard_A5", "Standard_A6", "Standard_A7", "Standard_A8", "Standard_A9", "Standard_A10", "Standard_A11",
 				"Standard_D2", "Standard_D3", "Standard_D4",
@@ -60,7 +60,7 @@
 		},
 		"nodeVmSize": {
 			"type": "string",
-			"defaultValue": "Standard_D4s_v3",
+			"defaultValue": "Standard_DS2_v2",
 			"allowedValues": [
 				"Standard_A4", "Standard_A5", "Standard_A6", "Standard_A7", "Standard_A8", "Standard_A9", "Standard_A10", "Standard_A11",
 				"Standard_D2", "Standard_D3", "Standard_D4",
@@ -84,10 +84,10 @@
 		},
 		"cnsVmSize": {
 			"type": "string",
-			"defaultValue": "Standard_E4s_v3",
+			"defaultValue": "Standard_DS12_v2",
 			"allowedValues": [
 				"Standard_D4s_v3", "Standard_D8s_v3", "Standard_D16s_v3", "Standard_D32s_v3", "Standard_D64s_v3",
-				"Standard_E4s_v3", "Standard_E8s_v3", "Standard_E16s_v3", "Standard_E32s_v3", "Standard_E64s_v3"
+				"Standard_E4s_v3", "Standard_E8s_v3", "Standard_E16s_v3", "Standard_E32s_v3", "Standard_E64s_v3", "Standard_DS12_v2"
 			],
 			"metadata": {
 				"description": "OpenShift CNS Node VM(s) size"
@@ -507,7 +507,7 @@
 		"tenantId": "[subscription().tenantId]",
 		"subscriptionId": "[subscription().subscriptionId]",
 		"apiVersionCompute": "2015-06-15",
-		"apiVersionNetwork": "2015-06-15",
+		"apiVersionNetwork": "2016-09-01",
 		"apiVersionStorage": "2016-01-01",
 		"apiVersionLinkTemplate": "2015-01-01",
 		"routingSubDomain": "[toLower(parameters('routingSubDomain'))]",
@@ -573,7 +573,7 @@
 				"skuTier": "[variables('vmSizesMap')[parameters('cnsVmSize')].storageAccountTier]"
 			},
 			"web": {
-				"skuName": "Standard_RAGRS",
+				"skuName": "Standard_LRS",
 				"skuTier": "Standard"
 			},
 			"diagnostics": {
@@ -659,18 +659,13 @@
 		},
 		"infraFrontEndIpConfigurationProperties": "[concat(parameters('routerClusterType'), 'InfraFrontEndIpConfigurationProperties')]",
 		"imageReference": "[parameters('rhelOsImage')]",
-		"marketplacePlan":{
-			"publisher": "[parameters('marketplaceOsImage').publisher]",
-			"product": "[parameters('marketplaceOsImage').offer]",
-			"name": "[parameters('marketplaceOsImage').sku]"
-		},
 		"redHatTags": {
 			"app": "OpenShiftContainerPlatform",
 			"version": "3.11",
 			"platform": "AzureStack",
 			"provider": "9d2c71fc-96ba-4b4a-93b3-14def5bc96fc"
 		},
-		"bastionVmSize": "Standard_D2s_v3",
+		"bastionVmSize": "Standard_DS2_v2",
 		"glusterDiskSize": 128,
 		"cnsInstanceCount": 3,
 		"singlequote": "'",
@@ -913,7 +908,7 @@
 			"Standard_DS12_v2": {
 				"storageAccountType": "Premium_LRS",
 				"storageAccountTier": "Premium",
-				"acceleratedNetworking": "true"
+				"acceleratedNetworking": "false"
 			},
 			"Standard_DS13_v2": {
 				"storageAccountType": "Premium_LRS",
@@ -1348,7 +1343,7 @@
 			"type": "Microsoft.Storage/storageAccounts",
 			"name": "[variables('newStorageAccountWeb')]",
 			"location": "[variables('location')]",
-			"kind": "StorageV2",
+			"kind": "Storage",
 			"apiVersion": "[variables('apiVersionStorage')]",
 			"tags": {
 				"displayName": "newStorageAccountWeb",
@@ -1436,9 +1431,6 @@
 			"name": "[variables('availabilitySetArray')[copyIndex()].name]",
 			"location": "[variables('location')]",
 			"apiVersion": "[variables('apiVersionCompute')]",
-			"sku": {
-				"name": "[variables(variables('availabilitySetSku'))]"
-			},
 			"properties": {
 				"platformFaultDomainCount": "[variables(variables('platformFaultDomainCount'))]",
 				"platformUpdateDomainCount": "5"
@@ -1460,9 +1452,6 @@
 			"condition": "[equals(parameters('enableCNS'), 'true')]",
 			"location": "[variables('location')]",
 			"apiVersion": "[variables('apiVersionCompute')]",
-			"sku": {
-				"name": "[variables(variables('availabilitySetSku'))]"
-			},
 			"properties": {
 				"platformFaultDomainCount": "[variables(variables('platformFaultDomainCount'))]",
 				"platformUpdateDomainCount": "5"
@@ -1631,7 +1620,6 @@
 						}
 					}
 				}],
-				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[variables('bastionVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
 				"networkSecurityGroup": {
 					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('openshiftBastionHostname'), '-nsg'))]"
 				}
@@ -1670,7 +1658,6 @@
 						}]
 					}
 				}],
-				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('masterVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
 				"networkSecurityGroup": {
 					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('openshiftMasterHostname'), '-nsg'))]"
 				}
@@ -1709,7 +1696,6 @@
 						}]
 					}
 				}],
-				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('infraVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
 				"networkSecurityGroup": {
 					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('openshiftInfraHostname'), '-nsg'))]"
 				}
@@ -1745,7 +1731,6 @@
 						}
 					}
 				}],
-				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('cnsVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
 				"networkSecurityGroup": {
 					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('openshiftCnsHostname'), '-nsg'))]"
 				}
@@ -1780,7 +1765,6 @@
 						}
 					}
 				}],
-				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('nodeVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
 				"networkSecurityGroup": {
 					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('openshiftNodeHostname'), '-nsg'))]"
 				}
