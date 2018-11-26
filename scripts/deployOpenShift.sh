@@ -47,13 +47,17 @@ export PROXYSETTING=${40}
 export HTTPPROXYENTRY="${41}"
 export HTTSPPROXYENTRY="${42}"
 export NOPROXYENTRY="${43}"
+export DOMAIN="${44}"
 export BASTION=$(hostname)
 
 # Set CNS to default storage type.  Will be overridden later if Azure is true
 export CNS_DEFAULT_STORAGE=true
 
-# Setting DOMAIN variable
-export DOMAIN=`domainname -d`
+# Setting DOMAIN variable based on Master Cluster Type
+if [[ MASTERCLUSTERTYPE == "public" ]]
+then
+	export DOMAIN=`domainname -d`
+fi
 
 # Determine if Commercial Azure or Azure Government
 CLOUD=$( curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/location?api-version=2017-04-02&format=text" | cut -c 1-2 )
@@ -381,7 +385,7 @@ openshift_logging_fluentd_nodeselector={"logging":"true"}
 openshift_logging_es_nodeselector={"node-role.kubernetes.io/infra":"true"}
 openshift_logging_kibana_nodeselector={"node-role.kubernetes.io/infra":"true"}
 openshift_logging_curator_nodeselector={"node-role.kubernetes.io/infra":"true"}
-openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME
+#openshift_logging_master_public_url=https://$MASTERPUBLICIPHOSTNAME
 
 # host group for masters
 [masters]

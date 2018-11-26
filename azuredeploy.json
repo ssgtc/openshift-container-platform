@@ -285,6 +285,13 @@
 				"description": "Azure AD Client Secret"
 			}
 		},
+		"domainName": {
+			"type": "string",
+			"defaultValue": "contoso.com",
+			"metadata": {
+				"description": "Domain search name"
+			}
+		},
 		"masterClusterDnsType": {
 			"type": "string",
 			"defaultValue": "default",
@@ -2275,6 +2282,12 @@
 					"adminUsername": {
 						"value": "[parameters('adminUsername')]"
 					},
+					"masterClusterType": {
+						"value": "[parameters('masterClusterType')]"
+					},
+					"domainName": {
+						"value": "[parameters('domainName')]"
+					},
 					"rhsmUsernameOrOrgId": {
 						"value": "[parameters('rhsmUsernameOrOrgId')]"
 					},
@@ -2629,6 +2642,9 @@
 					},
 					"aadClientSecret": {
 						"value": "[parameters('aadClientSecret')]"
+					},
+					"domainName": {
+						"value": "[parameters('domainName')]"
 					},
 					"nipioDomain": {
 						"value": "[concat(reference(variables('infraLbPublicIpDnsLabel')).ipAddress, '.nip.io')]"
