@@ -90,15 +90,15 @@ else
 fi
 
 # Logging into Azure CLI
-if [ "$AADCLIENTID" != "" ]
-then
-    echo $(date) " - Logging into Azure CLI"
-    az login --service-principal -u $AADCLIENTID -p $AADCLIENTSECRET -t $TENANTID
-    az account set -s $SUBSCRIPTIONID
+# if [ "$AADCLIENTID" != "" ]
+# then
+    # echo $(date) " - Logging into Azure CLI"
+    # az login --service-principal -u $AADCLIENTID -p $AADCLIENTSECRET -t $TENANTID
+    # az account set -s $SUBSCRIPTIONID
 
-    # Adding Storage Extension
-    az extension add --name storage-preview
-fi
+    # # Adding Storage Extension
+    # az extension add --name storage-preview
+# fi
 
 # Setting the default openshift_cloudprovider_kind if Azure enabled
 if [[ $AZURE == "true" ]]
@@ -236,33 +236,33 @@ echo $(date) " - Running DNS Hostname resolution check"
 runuser -l $SUDOUSER -c "ansible-playbook ~/openshift-container-platform-playbooks/check-dns-host-name-resolution.yaml"
 
 # Working with custom header logo can only happen is Azure is enabled
-IMAGECT=nope
-if [ $AZURE == "true" ]
-then
-    # Enabling static web site on the web storage account
-    echo "Custom Header: Enabling a static-website in the web storage account"
-    az storage blob service-properties update --account-name $WEBSTORAGE --static-website
+# IMAGECT=nope
+# if [ $AZURE == "true" ]
+# then
+    # # Enabling static web site on the web storage account
+    # echo "Custom Header: Enabling a static-website in the web storage account"
+    # az storage blob service-properties update --account-name $WEBSTORAGE --static-website
 
-    # Retrieving URL
-    WEBSTORAGEURL=$(az storage account show -n $WEBSTORAGE --query primaryEndpoints.web -o tsv)
-else
-    # If its not a valid HTTP or HTTPS Url set it to empty
-    echo "Custom Header: Invalid http or https URL"
-    IMAGEURL=""
-fi
+    # # Retrieving URL
+    # WEBSTORAGEURL=$(az storage account show -n $WEBSTORAGE --query primaryEndpoints.web -o tsv)
+# else
+    # # If its not a valid HTTP or HTTPS Url set it to empty
+    # echo "Custom Header: Invalid http or https URL"
+    # IMAGEURL=""
+# fi
 
 # Getting the image type assuming a valid URL
 # Failing is ok it will just default to the standard image
-if [[ $IMAGEURL =~ ^http ]]
-then
-    # If this curl fails then the script will just use the default image
-    # no retries required
-    IMAGECT=$(curl --head $IMAGEURL | grep -i content-type: | awk '{print $NF}' | tr -d '\r') || true
-    IMAGETYPE=$(echo $IMAGECT | awk -F/ '{print $2}' | awk -F+ '{print $1}')
-    echo "Custom Header: $IMAGETYPE identified"
-else
-    echo "Custom Header: No Valid Image URL specified"
-fi
+# if [[ $IMAGEURL =~ ^http ]]
+# then
+    # # If this curl fails then the script will just use the default image
+    # # no retries required
+    # IMAGECT=$(curl --head $IMAGEURL | grep -i content-type: | awk '{print $NF}' | tr -d '\r') || true
+    # IMAGETYPE=$(echo $IMAGECT | awk -F/ '{print $2}' | awk -F+ '{print $1}')
+    # echo "Custom Header: $IMAGETYPE identified"
+# else
+    # echo "Custom Header: No Valid Image URL specified"
+# fi
 
 # Create base CSS file
 cat > /tmp/customlogo.css <<EOF
@@ -273,26 +273,26 @@ cat > /tmp/customlogo.css <<EOF
 EOF
 
 # If there is an image then transfer it
-if [[ $IMAGECT =~ ^image ]]
-then
-    # If this curl fails then the script will just use the default image
-    # no retries required
-    echo "Custom Header: $IMAGETYPE downloaded"
-    curl -o /tmp/originallogo.$IMAGETYPE $IMAGEURL || true
-    convert /tmp/originallogo.$IMAGETYPE -geometry x20 /tmp/customlogo.$IMAGETYPE || true
-    # Uploading the custom css and image
-    echo "Custom Header: Uploading a logo of type $IMAGECT"
-    az storage blob upload-batch -s /tmp --pattern customlogo.* -d \$web --account-name $WEBSTORAGE
-fi
+# if [[ $IMAGECT =~ ^image ]]
+# then
+    # # If this curl fails then the script will just use the default image
+    # # no retries required
+    # echo "Custom Header: $IMAGETYPE downloaded"
+    # curl -o /tmp/originallogo.$IMAGETYPE $IMAGEURL || true
+    # convert /tmp/originallogo.$IMAGETYPE -geometry x20 /tmp/customlogo.$IMAGETYPE || true
+    # # Uploading the custom css and image
+    # echo "Custom Header: Uploading a logo of type $IMAGECT"
+    # az storage blob upload-batch -s /tmp --pattern customlogo.* -d \$web --account-name $WEBSTORAGE
+# fi
 
 # If there is an image then activate it in the install
 CUSTOMCSS=""
-if [ -f /tmp/customlogo.$IMAGETYPE ]
-then
-    # To be added to /etc/ansible/hosts
-    echo "Custom Header: Adding Image to Ansible Hosts file"
-    CUSTOMCSS="openshift_web_console_extension_stylesheet_urls=['${WEBSTORAGEURL}customlogo.css']"
-fi
+# if [ -f /tmp/customlogo.$IMAGETYPE ]
+# then
+    # # To be added to /etc/ansible/hosts
+    # echo "Custom Header: Adding Image to Ansible Hosts file"
+    # CUSTOMCSS="openshift_web_console_extension_stylesheet_urls=['${WEBSTORAGEURL}customlogo.css']"
+# fi
 
 # Create glusterfs configuration if CNS is enabled
 if [[ $ENABLECNS == "true" ]]
@@ -517,17 +517,17 @@ then
 fi
 
 # Adding Open Sevice Broker for Azaure (requires service catalog)
-if [[ $AZURE == "true" ]]
-then
-    oc new-project osba
-    oc process -f https://raw.githubusercontent.com/Azure/open-service-broker-azure/master/contrib/openshift/osba-os-template.yaml  \
-        -p ENVIRONMENT=AzurePublicCloud \
-        -p AZURE_SUBSCRIPTION_ID=$SUBSCRIPTIONID \
-        -p AZURE_TENANT_ID=$TENANTID \
-        -p AZURE_CLIENT_ID=$AADCLIENTID \
-        -p AZURE_CLIENT_SECRET=$AADCLIENTSECRET \
-        | oc create -f -
-fi
+# if [[ $AZURE == "true" ]]
+# then
+    # oc new-project osba
+    # oc process -f https://raw.githubusercontent.com/Azure/open-service-broker-azure/master/contrib/openshift/osba-os-template.yaml  \
+        # -p ENVIRONMENT=AzurePublicCloud \
+        # -p AZURE_SUBSCRIPTION_ID=$SUBSCRIPTIONID \
+        # -p AZURE_TENANT_ID=$TENANTID \
+        # -p AZURE_CLIENT_ID=$AADCLIENTID \
+        # -p AZURE_CLIENT_SECRET=$AADCLIENTSECRET \
+        # | oc create -f -
+# fi
 
 # Configure Metrics
 if [[ $METRICS == "true" ]]
