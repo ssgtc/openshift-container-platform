@@ -126,7 +126,9 @@ fi
 # Configure PROXY settings for OpenShift cluster
 if [[ $PROXYSETTING == "custom" ]]
 then
-    PROXY="openshift_http_proxy=$HTTPPROXYENTRY
+    export http_proxy=$HTTPPROXYENTRY
+	export https_proxy=$HTTSPPROXYENTRY
+	PROXY="openshift_http_proxy=$HTTPPROXYENTRY
 openshift_https_proxy=$HTTSPPROXYENTRY
 openshift_no_proxy='$NOPROXYENTRY'"
 fi
