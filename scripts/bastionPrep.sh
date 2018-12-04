@@ -132,6 +132,7 @@ sudo yum install -y ImageMagick
 # Configure DNS so it always has the domain name
 echo $(date) " - Adding DOMAIN to search for resolv.conf"
 echo "DOMAIN=$DOMAIN" >> /etc/sysconfig/network-scripts/ifcfg-eth0
+systemctl restart network
 
 # Run Ansible Playbook to update ansible.cfg file
 echo $(date) " - Updating ansible.cfg file"
