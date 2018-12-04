@@ -572,6 +572,13 @@ then
     fi
 fi
 
+# Creating variables file for private master configuration playbook
+echo $(date) " - Creating variables file for future playbooks"
+cat > /home/$SUDOUSER/openshift-container-platform-playbooks/vars.yaml <<EOF
+admin_user: $SUDOUSER
+master_lb_private_dns: $PRIVATEDNS
+EOF
+
 # Configure cluster for private masters
 if [[ $MASTERCLUSTERTYPE == "private" ]]
 then
