@@ -127,7 +127,7 @@ sudo yum install -y azure-cli
 echo $(date) " - Azure CLI installation complete"
 
 # Install ImageMagick to resize image for Custom Header
-sudo yum install -y ImageMagick
+# sudo yum install -y ImageMagick
 
 # Configure DNS so it always has the domain name
 echo $(date) " - Adding DOMAIN to search for resolv.conf"
