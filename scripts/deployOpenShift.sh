@@ -267,12 +267,12 @@ runuser -l $SUDOUSER -c "ansible-playbook ~/openshift-container-platform-playboo
 # fi
 
 # Create base CSS file
-cat > /tmp/customlogo.css <<EOF
-#header-logo {
-    background-image: url("${WEBSTORAGEURL}customlogo.${IMAGETYPE}");
-    height: 20px;
-}
-EOF
+# cat > /tmp/customlogo.css <<EOF
+# #header-logo {
+    # background-image: url("${WEBSTORAGEURL}customlogo.${IMAGETYPE}");
+    # height: 20px;
+# }
+# EOF
 
 # If there is an image then transfer it
 # if [[ $IMAGECT =~ ^image ]]
