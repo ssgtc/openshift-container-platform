@@ -304,6 +304,9 @@ openshift_hosted_registry_storage_azure_blob_accountkey=$ACCOUNTKEY
 openshift_hosted_registry_storage_azure_blob_container=registry
 openshift_hosted_registry_storage_azure_blob_realm=$DOCKERREGISTRYREALM
 
+openshift_storage_glusterfs_storageclass_default=true
+openshift_storageclass_default=false
+
 # Deploy Service Catalog
 openshift_enable_service_catalog=false
 
