@@ -230,6 +230,9 @@ if [[ $ENABLECNS == "true" ]]
 then
     echo $(date) " - Creating glusterfs configuration"
 
+	STORAGECLASS="openshift_storage_glusterfs_storageclass_default=true
+openshift_storageclass_default=false"
+
 	# Ensuring selinux is configured properly
     echo $(date) " - Setting selinux to allow gluster-fuse access"
     runuser -l $SUDOUSER -c "ansible all -o -f 30 -b -a 'sudo setsebool -P virt_sandbox_use_fusefs on'" || true
@@ -285,6 +288,7 @@ $CUSTOMCSS
 $ROUTINGCERTIFICATE
 $MASTERCERTIFICATE
 $PROXY
+$STORAGECLASS
 
 # Workaround for docker image failure
 # https://access.redhat.com/solutions/3480921
@@ -303,9 +307,6 @@ openshift_hosted_registry_storage_azure_blob_accountname=$REGISTRYSA
 openshift_hosted_registry_storage_azure_blob_accountkey=$ACCOUNTKEY
 openshift_hosted_registry_storage_azure_blob_container=registry
 openshift_hosted_registry_storage_azure_blob_realm=$DOCKERREGISTRYREALM
-
-openshift_storage_glusterfs_storageclass_default=true
-openshift_storageclass_default=false
 
 # Deploy Service Catalog
 openshift_enable_service_catalog=false
