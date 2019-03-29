@@ -652,9 +652,9 @@
 		},
 		"infraFrontEndIpConfigurationProperties": "[concat(parameters('routerClusterType'), 'InfraFrontEndIpConfigurationProperties')]",
 		"imageReference": {
-			"publisher": "RedHat",
-			"offer": "RHEL",
-			"sku": "7-RAW",
+			"publisher": "yungoalbj",
+			"offer": "redhat75",
+			"sku": "standard",
 			"version": "latest"
 		},
 		"marketplacePlan":{
