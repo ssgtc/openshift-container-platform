@@ -76,6 +76,7 @@ then
     export DOCKERREGISTRYREALM=core.usgovcloudapi.net
 	export CLOUDNAME="AzureUSGovernmentCloud"
 elif [[ $CLOUD == "CH" ]]
+then
 	export DOCKERREGISTRYREALM="core.chinacloudapi.cn"
 	export CLOUDNAME="AzureChinaCloud"
 else
