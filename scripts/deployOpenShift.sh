@@ -98,7 +98,7 @@ openshift_cloudprovider_azure_security_group_name=$NODENSG
 openshift_cloudprovider_azure_availability_set_name=$NODEAVAILIBILITYSET
 openshift_cloudprovider_azure_resource_group=$RESOURCEGROUP
 openshift_cloudprovider_azure_location=$LOCATION"
-	CNS_DEFAULT_STORAGE=false
+	export CNS_DEFAULT_STORAGE=false
 	if [[ $STORAGEKIND == "managed" ]]
 	then
 		SCKIND="openshift_storageclass_parameters={'kind': 'managed', 'storageaccounttype': 'Premium_LRS'}"
@@ -283,6 +283,7 @@ openshift_master_api_port=443
 openshift_master_console_port=443
 osm_default_node_selector='node-role.kubernetes.io/compute=true'
 openshift_disable_check=memory_availability,docker_image_availability
+openshift_storage_glusterfs_storageclass_default=$CNS_DEFAULT_STORAGE
 $CLOUDKIND
 $SCKIND
 $CUSTOMCSS
