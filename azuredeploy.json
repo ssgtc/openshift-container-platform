@@ -109,7 +109,7 @@
 			"type": "string",
 			"defaultValue": "defaultgallery",
 			"allowedValues": [
-				"defaultgallery", "marketplace"
+				"defaultgallery", "marketplace", "china"
 			],
 			"metadata": {
 				"description": "OpenShift OS image type. 'defaultgallery' will use the on demand RHEL image. 'marketplace' allows you to define a third party marketplace image to use."
@@ -652,6 +652,12 @@
 		},
 		"infraFrontEndIpConfigurationProperties": "[concat(parameters('routerClusterType'), 'InfraFrontEndIpConfigurationProperties')]",
 		"imageReference": {
+			"publisher": "RedHat",
+			"offer": "RHEL",
+			"sku": "7-RAW",
+			"version": "latest"
+		},
+		"imageReferenceChina": {
 			"publisher": "yungoalbj",
 			"offer": "redhat75",
 			"sku": "standard",
@@ -1791,7 +1797,7 @@
 						"value": "[variables('apiVersionCompute')]"
 					},
 					"imageReference": {
-						"value": "[variables('imageReference')]"
+						"value": "[if(equals(parameters('osImageType'), 'china'), variables('imageReferenceChina'), variables('imageReference'))]"
 					},
 					"redHatTags": {
 						"value": "[variables('redHatTags')]"
@@ -1885,7 +1891,7 @@
 						"value": "[variables('apiVersionCompute')]"
 					},
 					"imageReference": {
-						"value": "[variables('imageReference')]"
+						"value": "[if(equals(parameters('osImageType'), 'china'), variables('imageReferenceChina'), variables('imageReference'))]"
 					},
 					"redHatTags": {
 						"value": "[variables('redHatTags')]"
@@ -1978,8 +1984,8 @@
 					"apiVersionCompute": {
 						"value": "[variables('apiVersionCompute')]"
 					},
-					"imageReference": {
-						"value": "[variables('imageReference')]"
+					"imageReference": 
+						"value": "[if(equals(parameters('osImageType'), 'china'), variables('imageReferenceChina'), variables('imageReference'))]"
 					},
 					"redHatTags": {
 						"value": "[variables('redHatTags')]"
@@ -2073,7 +2079,7 @@
 						"value": "[variables('apiVersionCompute')]"
 					},
 					"imageReference": {
-						"value": "[variables('imageReference')]"
+						"value": "[if(equals(parameters('osImageType'), 'china'), variables('imageReferenceChina'), variables('imageReference'))]"
 					},
 					"redHatTags": {
 						"value": "[variables('redHatTags')]"
@@ -2172,7 +2178,7 @@
 						"value": "[variables('apiVersionCompute')]"
 					},
 					"imageReference": {
-						"value": "[variables('imageReference')]"
+						"value": "[if(equals(parameters('osImageType'), 'china'), variables('imageReferenceChina'), variables('imageReference'))]"
 					},
 					"redHatTags": {
 						"value": "[variables('redHatTags')]"
