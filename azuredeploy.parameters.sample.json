@@ -101,7 +101,10 @@
 			"value": "default"
 		},
 		"masterClusterDns": {
-			"value": "console.contoso.com"
+			"value": "external.contoso.com"
+		},
+		"masterPrivateAPIDns": {
+			"value": "internal.contoso.com"
 		},
 		"routingSubDomainType": {
 			"value": "nipio"

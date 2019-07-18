@@ -76,8 +76,19 @@ If private masters is selected (**masterClusterType**=private), a static private
 If private router is selected (**routerClusterType**=private), a static private IP needs to be specified for **routerPrivateClusterIp** which will be assigned to the front end of the infra load balancer.  This must be within the CIDR for the infra subnet and not already in use.  **routingSubDomainType** must be set to "custom" and the wildcard DNS name for routing must be provided for **routingSubDomain**.  
 
 If private masters and private router is selected, the custom domain name must also be entered for **domainName**
-
 After successful deployment, the Bastion Node is the only node with a public IP that you can ssh into.  Even if the master nodes are configured for public access, they are not exposed for ssh access.
+
+**Public Clusters Load Balancers**
+
+Deploying public OpenShift clusters allows to use two Load Balancers fo the Masters, one for the web console and the other dedicated to internal requests.  
+This configuration is [recommended in Production](http://v1.uncontained.io/playbooks/installation/load_balancing.html#custom-certificate-ssl-termination-production) environment and when Custom certificates are required.  
+
+To manage current [Azure Load Balancer limitations](https://docs.microsoft.com/en-us/azure/load-balancer/load-balancer-standard-overview#limitations) a specific dnsmasq configuration will be deployed on masters to avoid them to access the internal Load Balancer frontend while they are participating to Load Balancer backend pool.
+
+![Public LB diagram](images/openshiftpubliclbdiagram.png)
+
+
+If public master cluster type is selected (**masterClusterType**=public) the master DNS name must be provided for **masterClusterDns** and this needs to map to the static Public IP and will be used to access the console on the master nodes. And the master API DNS must be set with **masterAPIDns** and needs to map the static Private IP of the internal Load Balancer frontend.
 
 ## Prerequisites
 
@@ -228,6 +239,7 @@ az keyvault secret set --vault-name KeyVaultName -n mastercafile --file ~/certif
 | `domainName`              | Name of the custom domain name to use (if applicable). Set to "none" if not deploying fully private cluster |                                                                        | none              |
 | `masterClusterDnsType`    | Domain type for OpenShift web console. 'default' will use DNS label of master infra public IP. 'custom' allows you to define your own name.          | - "default"<br>- "custom"     | default           |
 | `masterClusterDns`        | The custom DNS name to use to access the OpenShift web console if you selected 'custom' for `masterClusterDnsType`                                   |                               | console.contoso.com  |
+| `masterAPIDns`        | The custom DNS name to use to access the OpenShift API private Load Balancer console if you selected 'public' for `masterClusterType`                                   |                               | internal.contoso.com  |
 | `routingSubDomainType`    | This will either be nipio (if you don't have your own domain) or 'custom' if you have your own domain that you would like to use for routing         | - "nipio"<br>- "custom"       | nipio             |
 | `routingSubDomain`        | The wildcard DNS name you would like to use for routing if you selected 'custom' for `routingSubDomainType`                                          |                               | apps.contoso.com  |
 | `virtualNetworkNewOrExisting`   | Select whether to use an existing Virtual Network or create a new Virtual Network                                                              | - "existing"<br>- "new"       | new               |

@@ -312,6 +312,12 @@
 			"metadata": {
 				"description": "Custom domain name for access to OpenShift web console. Must be all lowercase"
 			}
+		},"masterAPIDns": {
+			"type": "string",
+			"defaultValue": "internal.contoso.com",
+			"metadata": {
+				"description": "Custom domain name that will match the frontal IP of the private LB used for API request in case of a public Master cluster type. Must be all lowercase"
+			}
 		},
 		"routingSubDomainType": {
 			"type": "string",
@@ -618,6 +624,17 @@
 		"masterLbBackendPoolId": "[concat(variables('masterLbId'),'/backendAddressPools/loadBalancerBackend')]",
 		"masterLbHttpProbeId": "[concat(variables('masterLbId'),'/probes/httpProbe')]",
 		"masterLbHttpsProbeId": "[concat(variables('masterLbId'),'/probes/httpsProbe')]",
+
+		"deployMasterAPIPrivateLb?": "[equals(parameters('masterClusterType'), 'public')]",
+		"masterPrivateLoadBalancerName": "[concat(variables('openshiftMasterHostname'), 'privateLb')]",
+		"masterPrivateLbId": "[resourceId('Microsoft.Network/loadBalancers', variables('masterPrivateLoadBalancerName'))]",
+		"masterPrivateLbFrontEndConfigId": "[concat(variables('masterPrivateLbId'), '/frontendIPConfigurations/loadBalancerFrontEnd')]",
+		"masterPrivateLbBackendPoolId": "[concat(variables('masterPrivateLbId'),'/backendAddressPools/loadBalancerBackend')]",
+		"masterPrivateLbHttpProbeId": "[concat(variables('masterPrivateLbId'),'/probes/httpProbe')]",
+		"masterPrivateLbHttpsProbeId": "[concat(variables('masterPrivateLbId'),'/probes/httpsProbe')]",
+		"masterPrivateLbBackendPoolIdObject": {
+			"id": "[variables('masterPrivateLbBackendPoolId')]"
+		},
 
 		"infraLoadBalancerName": "[concat(variables('openshiftInfraHostname'), 'lb')]",
 		"infraPublicIpAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('infraLbPublicIpDnsLabel'))]",
@@ -1454,7 +1471,55 @@
 					}
 				}]
 			}
-		}, {
+		},{
+			"condition": "[variables('deployMasterAPIPrivateLb?')]",
+			"type": "Microsoft.Network/loadBalancers",
+			"name": "[variables('masterPrivateLoadBalancerName')]",
+			"location": "[parameters('location')]",
+			"tags": {
+				"displayName": "OpenShiftMasterPrivateLB",
+				"provider": "[variables('redHatTags').provider]",
+				"app": "[variables('redHatTags').app]",
+				"version": "[variables('redHatTags').version]",
+				"platform": "[variables('redHatTags').platform]"
+			},
+			"properties": {
+				"frontendIPConfigurations": [{
+					"name": "LoadBalancerFrontEnd",
+					"properties": "[variables('privateMasterFrontEndIpConfigurationProperties')]"
+				}],
+				"backendAddressPools": [{
+					"name": "loadBalancerBackEnd"
+				}],
+				"loadBalancingRules": [{
+					"name": "OpenShiftAPI",
+					"properties": {
+						"frontendIPConfiguration": {
+							"id": "[variables('masterPrivateLbFrontEndConfigId')]"
+						},
+						"backendAddressPool": {
+							"id": "[variables('masterPrivateLbBackendPoolId')]"
+						},
+						"protocol": "Tcp",
+						"idleTimeoutInMinutes": 30,
+						"frontendPort": 443,
+						"backendPort": 443,
+						"probe": {
+							"id": "[variables('masterPrivateLbHttpsProbeId')]"
+						}
+					}
+				}],
+				"probes": [{
+					"name": "httpsProbe",
+					"properties": {
+						"protocol": "Tcp",
+						"port": 443,
+						"intervalInSeconds": 5,
+						"numberOfProbes": 2
+					}
+				}]
+			}
+		},{
 			"type": "Microsoft.Network/loadBalancers",
 			"name": "[variables('infraLoadBalancerName')]",
 			"location": "[parameters('location')]",
@@ -1574,7 +1639,8 @@
 			"dependsOn": [
 				"[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
 				"[concat('Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName'))]",
-				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftMasterHostname'), '-nsg')]"
+				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftMasterHostname'), '-nsg')]",
+				"[if(variables('deployMasterAPIPrivateLb?'), concat('Microsoft.Network/loadBalancers/', variables('masterPrivateLoadBalancerName')), concat('Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName')))]"
 			],
 			"copy": {
 				"name": "masterNicLoop",
@@ -1589,8 +1655,10 @@
 							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
 						},
 						"loadBalancerBackendAddressPools": [{
-							"id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName'), '/backendAddressPools/loadBalancerBackEnd')]"
-						}]
+							"id": "[variables('masterLbBackendPoolId')]"
+						},
+						"[if(variables('deployMasterAPIPrivateLb?'), variables('masterPrivateLbBackendPoolIdObject'), json('null'))]"
+						]
 					}
 				}],
 				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('masterVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
@@ -2638,6 +2706,9 @@
 					},
 					"masterPublicIpName": {
 						"value": "[variables('openshiftMasterPublicIpDnsLabel')]"
+					},
+					"masterAPIDns": {
+						"value": "[parameters('masterAPIDns')]"
 					},
 					"routerClusterType": {
 						"value": "[parameters('routerClusterType')]"

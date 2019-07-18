@@ -1,5 +1,7 @@
 This CHANGELOG.md file will contain the update log for the latest set of updates to the templates
+# UPDATES for Release 3.11 - July 18, 2019
 
+1.  Add support for 2 Load Balancers in front of Masters
 
 # UPDATES for Master (Release 3.11) - November 19, 2018
 
