@@ -6,16 +6,16 @@
 			"value": "https://raw.githubusercontent.com/Microsoft/openshift-container-platform/master"
 		},
 		"masterVmSize": {
-			"value": "Standard_E2s_v3"
+			"value": "Standard_DS12_v2"
 		},
 		"infraVmSize": {
-			"value": "Standard_D4s_v3"
+			"value": "Standard_DS12_v2"
 		},
 		"nodeVmSize": {
-			"value": "Standard_D4s_v3"
+			"value": "Standard_DS3_v2"
 		},
 		"cnsVmSize": {
-			"value": "Standard_E4s_v3"
+			"value": "Standard_DS12_v2"
 		},
 		"osImageType": {
 			"value": "defaultgallery"
