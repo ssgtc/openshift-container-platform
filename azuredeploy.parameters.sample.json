@@ -89,7 +89,7 @@
 			"value": "keyvault"
 		},
 		"enableAzure": {
-			"value": "true"
+			"value": "false"
 		},
 		"aadClientId": {
 			"value": "aa1f18d9-1234-4f11-11cb-d6da4f6def11"
