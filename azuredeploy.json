@@ -660,7 +660,7 @@
 			"platform": "AzurePublic",
 			"provider": "5c55d719-e293-4b46-8d7b-9c6221a227e4"
 		},
-		"bastionVmSize": "Standard_D2s_v3",
+		"bastionVmSize": "Standard_DS2_v2",
 		"singlequote": "'",
 		"sshKeyPath": "[concat('/home/', parameters('adminUsername'), '/.ssh/authorized_keys')]",
 		"bastionPrepScriptUrl": "[concat(parameters('_artifactsLocation'), '/scripts/bastionPrep.sh')]",
