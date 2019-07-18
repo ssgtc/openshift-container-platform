@@ -492,6 +492,16 @@
 			"metadata": {
 				"description": "Determine if OpenShift is automatically installed or just the infrastructure components along witht he initial preparation of all the hosts."
 			}
+		},
+		"automaticPrep": {
+			"type": "string",
+			"defaultValue": "automatic",
+			"allowedValues": [
+				"automatic", "manual"
+			],
+			"metadata": {
+				"description": "Determine if OS must be automatically prepared ('automatic' value is mandatory if 'automaticDeployment' has been also set to 'automatic'"
+			}
 		}
 	},
 	"variables": {
@@ -2146,6 +2156,7 @@
 				}
 			}
 		}, {
+			"condition": "[equals(parameters('automaticPrep'), 'automatic')]",
 			"type": "Microsoft.Resources/deployments",
 			"name": "bastionPrep",
 			"dependsOn": [
@@ -2270,6 +2281,7 @@
 				}
 			}
 		}, {
+			"condition": "[equals(parameters('automaticPrep'), 'automatic')]",
 			"type": "Microsoft.Resources/deployments",
 			"name": "[concat('masterPrep', padLeft(add(copyIndex(), 1), 2, '0'))]",			
 			"dependsOn": [
@@ -2324,6 +2336,7 @@
 				}
 			}
 		}, {
+			"condition": "[equals(parameters('automaticPrep'), 'automatic')]",
 			"type": "Microsoft.Resources/deployments",
 			"name": "[concat('InfraPrep', padLeft(add(copyIndex(), 1), 2, '0'))]",
 			"dependsOn": [
@@ -2375,7 +2388,7 @@
 				}
 			}
 		}, {
-			"condition": "[equals(parameters('enableCNS'), 'true')]",
+			"condition": "[and(equals(parameters('enableCNS'), 'true'), equals(parameters('automaticPrep'), 'automatic'))]",
 			"type": "Microsoft.Resources/deployments",
 			"name": "[concat('CNSPrep', padLeft(add(copyIndex(), 1), 2, '0'))]",
 			"dependsOn": [
@@ -2427,6 +2440,7 @@
 				}
 			}
 		}, {
+			"condition": "[equals(parameters('automaticPrep'), 'automatic')]",
 			"type": "Microsoft.Resources/deployments",
 			"name": "[concat('NodePrep', padLeft(add(copyIndex(), 1), 2, '0'))]",
 			"dependsOn": [
