@@ -625,7 +625,7 @@
 		"masterLbHttpProbeId": "[concat(variables('masterLbId'),'/probes/httpProbe')]",
 		"masterLbHttpsProbeId": "[concat(variables('masterLbId'),'/probes/httpsProbe')]",
 
-		"deployMasterAPIPrivateLb?": "[equals(parameters('masterClusterType'), 'public')]",
+		"deployMasterAPIPrivateLb": "[equals(parameters('masterClusterType'), 'public')]",
 		"masterPrivateLoadBalancerName": "[concat(variables('openshiftMasterHostname'), 'privateLb')]",
 		"masterPrivateLbId": "[resourceId('Microsoft.Network/loadBalancers', variables('masterPrivateLoadBalancerName'))]",
 		"masterPrivateLbFrontEndConfigId": "[concat(variables('masterPrivateLbId'), '/frontendIPConfigurations/loadBalancerFrontEnd')]",
@@ -1472,7 +1472,7 @@
 				}]
 			}
 		},{
-			"condition": "[variables('deployMasterAPIPrivateLb?')]",
+			"condition": "[variables('deployMasterAPIPrivateLb')]",
 			"type": "Microsoft.Network/loadBalancers",
 			"name": "[variables('masterPrivateLoadBalancerName')]",
 			"location": "[parameters('location')]",
@@ -1640,7 +1640,7 @@
 				"[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
 				"[concat('Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName'))]",
 				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftMasterHostname'), '-nsg')]",
-				"[if(variables('deployMasterAPIPrivateLb?'), concat('Microsoft.Network/loadBalancers/', variables('masterPrivateLoadBalancerName')), concat('Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName')))]"
+				"[if(variables('deployMasterAPIPrivateLb'), concat('Microsoft.Network/loadBalancers/', variables('masterPrivateLoadBalancerName')), concat('Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName')))]"
 			],
 			"copy": {
 				"name": "masterNicLoop",
@@ -1657,7 +1657,7 @@
 						"loadBalancerBackendAddressPools": [{
 							"id": "[variables('masterLbBackendPoolId')]"
 						},
-						"[if(variables('deployMasterAPIPrivateLb?'), variables('masterPrivateLbBackendPoolIdObject'), json('null'))]"
+						"[if(variables('deployMasterAPIPrivateLb'), variables('masterPrivateLbBackendPoolIdObject'), json('null'))]"
 						]
 					}
 				}],
