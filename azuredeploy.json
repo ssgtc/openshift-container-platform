@@ -632,9 +632,9 @@
 		"masterPrivateLbBackendPoolId": "[concat(variables('masterPrivateLbId'),'/backendAddressPools/loadBalancerBackend')]",
 		"masterPrivateLbHttpProbeId": "[concat(variables('masterPrivateLbId'),'/probes/httpProbe')]",
 		"masterPrivateLbHttpsProbeId": "[concat(variables('masterPrivateLbId'),'/probes/httpsProbe')]",
-		"masterPrivateLbBackendPoolIdObject": {
-			"id": "[variables('masterPrivateLbBackendPoolId')]"
-		},
+		
+		"masterLbBackendAddressPoolWithOneId": [ {"id": "[variables('masterLbBackendPoolId')]"}],
+		"masterLbBackendAddressPoolWithTwoIds": [ {"id": "[variables('masterLbBackendPoolId')]"}, {"id": "[variables('masterPrivateLbBackendPoolId')]"}],
 
 		"infraLoadBalancerName": "[concat(variables('openshiftInfraHostname'), 'lb')]",
 		"infraPublicIpAddressId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('infraLbPublicIpDnsLabel'))]",
@@ -1654,11 +1654,7 @@
 						"subnet": {
 							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
 						},
-						"loadBalancerBackendAddressPools": [{
-							"id": "[variables('masterLbBackendPoolId')]"
-						},
-						"[if(variables('deployMasterAPIPrivateLb'), variables('masterPrivateLbBackendPoolIdObject'), json('null'))]"
-						]
+						"loadBalancerBackendAddressPools": "[if(variables('deployMasterAPIPrivateLb'), variables('masterLbBackendAddressPoolWithTwoIds'), variables('masterLbBackendAddressPoolWithOneId'))]"
 					}
 				}],
 				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('masterVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
