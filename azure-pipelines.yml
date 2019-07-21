@@ -1,10 +1,15 @@
 #
 # Will deploy openshift in different Use Cases.
 # Needs some variables to be set in azure pipelines Web IHM to work.
-#   azs_pool_name: Azure Pipelines pool to use with Azure Stack (VM must be able to reach your Azure Stack)
-#   azs_arm_endpoint: The ResourceManagerUrl in the Azure Stack (example: https://management.local.azurestack.external)
-#   azs_suffix_storage_endpoint: use an endpoint for your Azure Stack (example: local.azurestack.external)
-#   azs_suffix_keyvault_dns: use an endpoint for your Azure Stack (example: .vault.local.azurestack.external)
+# * Azure Stack needed vars: 
+#     azs_pool_name: Azure Pipelines pool to use with Azure Stack (VM must be able to reach your Azure Stack)
+#     azs_arm_endpoint: The ResourceManagerUrl in the Azure Stack (example: https://management.local.azurestack.external)
+#     azs_suffix_storage_endpoint: use an endpoint for your Azure Stack (example: local.azurestack.external)
+#     azs_suffix_keyvault_dns: use an endpoint for your Azure Stack (example: .vault.local.azurestack.external)
+# * Service Principal needed vars:
+#     sp_app_id: Service Principal Application ID
+#     sp_tenant_id: Service Principal Tenant ID
+#     sp_secret: Service Principal Secret (must be stored encrypted, see: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables)
 trigger:
 - stack311*
 
@@ -22,3 +27,11 @@ stages:
           --suffix-storage-endpoint "$(azs_suffix_storage_endpoint)" \
           --suffix-keyvault-dns "$(azs_suffix_keyvault_dns)"
       displayName: az cloud registering Azure Stack
+
+    - script: |
+        az login --service-principal -u $(sp_app_id) \
+          -p $env:MY_MAPPED_SP_SECRET \
+          --tenant $(sp_tenant_id)
+      displayName: az login with service principal
+      env:
+        MY_MAPPED_SP_SECRET: $(sp_secret)
