@@ -6,6 +6,7 @@
 #     azs_arm_endpoint: The ResourceManagerUrl in the Azure Stack (example: https://management.local.azurestack.external)
 #     azs_suffix_storage_endpoint: use an endpoint for your Azure Stack (example: local.azurestack.external)
 #     azs_suffix_keyvault_dns: use an endpoint for your Azure Stack (example: .vault.local.azurestack.external)
+#     azs_subscription_id: Subscrition ID to use to test the deployment of OpenShift on Azure Stack
 # * Service Principal needed vars:
 #     sp_app_id: Service Principal Application ID
 #     sp_tenant_id: Service Principal Tenant ID
@@ -26,6 +27,7 @@ stages:
           --endpoint-resource-manager "$(azs_arm_endpoint)" \
           --suffix-storage-endpoint "$(azs_suffix_storage_endpoint)" \
           --suffix-keyvault-dns "$(azs_suffix_keyvault_dns)"
+        echo "Anything because we want to always exit with 0"
       displayName: az cloud registering Azure Stack
       # The cloud may have already been registered. We ignore any error
       continueOnError: true
@@ -35,3 +37,6 @@ stages:
           -p $(sp_secret) \
           --tenant $(sp_tenant_id)
       displayName: az login with service principal
+
+    - script: az account set -s $(azs_subscription_id)
+      displayName: Set az account to the right subscription id
