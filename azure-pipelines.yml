@@ -53,3 +53,22 @@ stages:
     - script: |
         az group create -n $(rg_name) -l $(azs_location)
       displayName: create a resource group
+
+    - script: ssh-keygen -t rsa -b 4096 -C "auto generated ssh key" -f $(local_id)
+      displayName: generate ssh-key
+
+    - script: cat $(local_id).pub
+      displayName: output ssh pub key
+      
+    # - script: |
+    #     az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
+    #       --name ocp \
+    #       -g $(rg_name) \
+    #       --parameters "$(Build.SourcesDirectory)/azuredeploy.parameters.json" \
+    #       --parameters "storageKind=managed" \
+    #       --parameters "openshiftClusterPrefix=ocp1mastersscerts" \
+    #       --parameters "osImageType=marketplace" \
+    #       --parameters "adminUsername=ocpadmin" \
+
+          
+
