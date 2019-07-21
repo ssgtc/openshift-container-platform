@@ -5,8 +5,8 @@ trigger:
 - stack311*
 
 pool:
-  name: azblue
+  name: $(pool_name)
 
 steps:
-- script: echo Hello, world!
-  displayName: 'say helloworld'
+- script: echo "pool name is $(pool_name)"
+  displayName: 'Display pool name!'
