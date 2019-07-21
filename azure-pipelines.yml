@@ -35,7 +35,8 @@ stages:
           --endpoint-resource-manager "$(azs_arm_endpoint)" \
           --suffix-storage-endpoint "$(azs_suffix_storage_endpoint)" \
           --suffix-keyvault-dns "$(azs_suffix_keyvault_dns)"
-        echo "Anything because we want to always exit with 0 in case AzureStackUser already exists"
+        az cloud update --profile 2019-03-01-hybrid
+        #echo "Anything because we want to always exit with 0 in case AzureStackUser already exists"
       displayName: az cloud registering Azure Stack
 
     - script: az cloud set --name AzureStackUser
