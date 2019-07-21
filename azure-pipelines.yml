@@ -100,6 +100,12 @@ stages:
       displayName: store the Red Hat Subscription Manager password in keyvault
 
     - script: |
+        az keyvault secret set \
+          --vault-name  $(keyvault_name) \
+          -n aadClientSecret  --value fake
+      displayName: store a fake aadClientSecret in keyvault because it's always get
+
+    - script: |
         echo '{ "publisher": "$(azs_redhat_publisher)", "offer": "$(azs_redhat_offer)", "sku": "$(azs_redhat_sku)", "version": "$(azs_redhat_version)" }' > rhel_image.json
         cat rhel_image.json
         echo '$(arm_rhsm_pool_id)' > rhsm_pool_id
