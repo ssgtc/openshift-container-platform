@@ -5,7 +5,7 @@ trigger:
 - stack311*
 
 pool:
-- name: azblue
+  name: azblue
 
 steps:
 - script: echo Hello, world!
