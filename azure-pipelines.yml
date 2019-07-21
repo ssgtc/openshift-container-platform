@@ -73,7 +73,13 @@ stages:
           -n sshPrivateKey \
           --file $(local_id)
       displayName: store ssh private key in keyvault
-      
+
+    - script: |
+        admin_pass=`openssl rand -base64 32`
+        az keyvault secret set \
+          --vault-name  $(keyvault_name) \
+          -n openshiftPassword --value $admin_pass
+      displayName: generate and store the admin password in keyvault
     # - script: |
     #     az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
     #       --name ocp \
