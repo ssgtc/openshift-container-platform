@@ -32,14 +32,14 @@ stages:
         echo "Anything because we want to always exit with 0 in case AzureStackUser already exists"
       displayName: az cloud registering Azure Stack
 
+    - script: az cloud set --name AzureStackUser
+      displayName: Switch az cli to use Azure Stack cloud
+
     - script: |
         az login --service-principal -u $(sp_app_id) \
           -p $(sp_secret) \
           --tenant $(sp_tenant_id)
       displayName: az login with service principal
-
-    - script: az cloud set --name AzureStackUser
-      displayName: Switch az cli to use Azure Stack cloud
 
     - script: az account set -s $(azs_subscription_id)
       displayName: Set az account to the right subscription id
