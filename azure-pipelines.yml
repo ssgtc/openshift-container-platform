@@ -43,3 +43,8 @@ stages:
 
     - script: az account set -s $(azs_subscription_id)
       displayName: Set az account to the right subscription id
+
+    - script: |
+        echo "build id - $(Build.BuildId)"
+        echo "build number - Build.BuildNumber"
+      displayName: debug build variables
