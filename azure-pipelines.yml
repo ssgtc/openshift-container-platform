@@ -7,12 +7,16 @@
 #     azs_suffix_storage_endpoint: use an endpoint for your Azure Stack (example: local.azurestack.external)
 #     azs_suffix_keyvault_dns: use an endpoint for your Azure Stack (example: .vault.local.azurestack.external)
 #     azs_subscription_id: Subscrition ID to use to test the deployment of OpenShift on Azure Stack
+#     azs_location: Azure Stack location to use
 # * Service Principal needed vars:
 #     sp_app_id: Service Principal Application ID
 #     sp_tenant_id: Service Principal Tenant ID
 #     sp_secret: Service Principal Secret (must be stored encrypted, see: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables)
 trigger:
 - stack311*
+
+variables:
+  local_id: $(Build.BuildNumber).$(Build.BuildId)
 
 stages:
 - stage: azs_deploy
@@ -21,6 +25,8 @@ stages:
   - job: azs_ocp_1master_selfsignedcerts
     displayName: OCP with 1 Master LB and self signed certificates
     pool: $(azs_pool_name)
+    variables:
+      rg_name: ci_ocp_1_master_sscerts_$(local_id)
     steps:
 
     # The cloud may have already been registered. We ignore any error
@@ -45,6 +51,5 @@ stages:
       displayName: Set az account to the right subscription id
 
     - script: |
-        echo "build id - $(Build.BuildId)"
-        echo "build number - $(Build.BuildNumber)"
-      displayName: debug build variables
+        az group create -n $(rg_name) -l $(azs_location)
+      displayName: create a resource group
