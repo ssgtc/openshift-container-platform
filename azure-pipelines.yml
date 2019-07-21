@@ -121,7 +121,11 @@ stages:
           keyVaultName=$(keyvault_name)  \
           automaticDeployment=manual \
           automaticPrep=manual \
-          marketplaceOsImage=@rhel_image.json
+          marketplaceOsImage=@rhel_image.json \
+          virtualNetworkName=vnet-$(local_id) \
+          masterSubnetName=mastersubnet \
+          infraSubnetName=infrasubnet \
+          nodeSubnetName=nodesubnet
       displayName: run the ARM template
           
 
