@@ -111,15 +111,16 @@ stages:
           "osImageType=marketplace" \
           "adminUsername=ocpadmin" \
           "rhsmUsernameOrOrgId=$(arm_rhsm_username_or_org_Id)" \ 
-          "rhsmPoolId=$(arm_rhsm_pool_id)" \
-          "rhsmBrokerPoolId=$(arm_rhsm_pool_id)" \
+          'rhsmPoolId=$(arm_rhsm_pool_id)' \
+          'rhsmBrokerPoolId=$(arm_rhsm_pool_id)' \
           "sshPublicKey=`cat $(local_id).pub`" \
-          "keyVaultSubscriptionId=$(azs_subscription_id)" \
+          'keyVaultSubscriptionId=$(azs_subscription_id)' \
           "keyVaultResourceGroup=$(rg_name)" \
           "keyVaultName=$(keyvault_name)"  \
           "automaticDeployment=manual" \
           "automaticPrep=manual" \
           "marketplaceOsImage=@rhel_image.json"
+      displayName: run the ARM template
           
 
           
