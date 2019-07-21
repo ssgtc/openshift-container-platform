@@ -57,8 +57,10 @@ stages:
     - script: ssh-keygen -t rsa -b 4096 -C "auto generated ssh key" -f $(local_id) -P ''
       displayName: generate ssh-key
 
-    - script: cat $(local_id).pub
-      displayName: output ssh pub key
+    - script: |
+        myvar=`cat $(local_id).pub`
+        echo "myvar=$myvar"
+      displayName: output ssh pub key in a var
       
     # - script: |
     #     az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
