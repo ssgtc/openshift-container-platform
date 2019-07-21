@@ -103,7 +103,7 @@
 		"masterClusterDns": {
 			"value": "external.contoso.com"
 		},
-		"masterPrivateAPIDns": {
+		"masterAPIDns": {
 			"value": "internal.contoso.com"
 		},
 		"routingSubDomainType": {
