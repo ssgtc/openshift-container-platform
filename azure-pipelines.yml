@@ -9,9 +9,11 @@ trigger:
 - stack311*
 
 stages:
-- stage: Deploy on Azure Stack
+- stage: azs_deploy
+  displayName: Azure Stack Deploy
   jobs:
-  - job: OCP with 1 Master LB and self signed certificates
+  - job: azs_ocp_1master_selfsignedcerts
+    displayName: OCP with 1 Master LB and self signed certificates
     pool: $(azs_pool_name)
     steps:
     - script: |
