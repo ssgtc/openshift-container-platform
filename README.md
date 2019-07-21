@@ -319,6 +319,8 @@ If you enable Azure or CNS for storage these scripts will deploy the service cat
 
 **Metrics**
 
+
+
 If you deployed Metrics, it will take a few extra minutes for deployment to complete. Please be patient.
 
 Once the deployment is complete, log into the OpenShift Web Console and complete an addition configuration step.  Go to the openshift-infra project, click on Hawkster metrics route, and accept the SSL exception in your browser.
@@ -337,3 +339,9 @@ To create additional (non-admin) users in your environment, login to your master
 ### Additional OpenShift Configuration Options
  
 You can configure additional settings per the official (<a href="https://docs.openshift.com/container-platform/3.10/welcome/index.html" target="_blank">OpenShift Enterprise Documentation</a>).
+
+### DEPLOYMENT TESTS
+
+| Cloud | Master Cluster type | Number of Load Balancers for Masters | Certificates | Pipeline Status |
+| ----- | ------------------- | ---------------------------------- | ------------ | --------------- |
+| Azure Stack | public |  1 | self signed | [![Build Status](https://dev.azure.com/soprasteria/openshift-container-platform/_apis/build/status/ssgtc.openshift-container-platform?branchName=stack311ci&jobName=OCP%20with%201%20Master%20LB%20and%20self%20signed%20certificates)](https://dev.azure.com/soprasteria/openshift-container-platform/_build/latest?definitionId=220&branchName=stack311ci) |
