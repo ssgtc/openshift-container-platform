@@ -119,8 +119,8 @@ stages:
           keyVaultSubscriptionId=$(azs_subscription_id) \
           keyVaultResourceGroup=$(rg_name) \
           keyVaultName=$(keyvault_name)  \
-          automaticDeployment=manual \
-          automaticPrep=manual \
+          automaticDeployment=automatic \
+          automaticPrep=automatic \
           marketplaceOsImage=@rhel_image.json \
           virtualNetworkName=vnet-$(local_id) \
           masterSubnetName=mastersubnet \
