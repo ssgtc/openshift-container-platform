@@ -58,10 +58,13 @@ stages:
       displayName: generate ssh-key
 
     - script: |
-        myvar=`cat $(local_id).pub`
-        echo "myvar=$myvar"
-      displayName: output ssh pub key in a var
-      
+        az keyvault create \
+          -n keyvault_$(local_id) \
+          -g $(rg_name) \
+          -l $(azs_location) \
+          --enabled-for-template-deployment true
+      displayName: create a keyvault
+    
     # - script: |
     #     az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
     #       --name ocp \
