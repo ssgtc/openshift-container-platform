@@ -104,10 +104,10 @@ stages:
         cat rhel_image.json
         echo '$(arm_rhsm_pool_id)' > rhsm_pool_id
         echo '$(arm_rhsm_username_or_org_Id)' > rhsm_user
-        az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
+        echo "az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
           --name ocp \
           -g $(rg_name) \
-          --parameters "@$(Build.SourcesDirectory)/azuredeploy.parameters.json" \
+          --parameters @$(Build.SourcesDirectory)/azuredeploy.parameters.json \
           storageKind=managed \
           openshiftClusterPrefix=ocp1mlbsscerts \
           osImageType=marketplace \
@@ -121,7 +121,7 @@ stages:
           keyVaultName=$(keyvault_name)  \
           automaticDeployment=manual \
           automaticPrep=manual \
-          marketplaceOsImage=@rhel_image.json
+          marketplaceOsImage=@rhel_image.json"
       displayName: run the ARM template
           
 
