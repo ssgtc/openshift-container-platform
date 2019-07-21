@@ -22,21 +22,24 @@ stages:
     displayName: OCP with 1 Master LB and self signed certificates
     pool: $(azs_pool_name)
     steps:
+
+    # The cloud may have already been registered. We ignore any error
     - script: |
         az cloud register -n AzureStackUser \
           --endpoint-resource-manager "$(azs_arm_endpoint)" \
           --suffix-storage-endpoint "$(azs_suffix_storage_endpoint)" \
           --suffix-keyvault-dns "$(azs_suffix_keyvault_dns)"
-        echo "Anything because we want to always exit with 0"
+        echo "Anything because we want to always exit with 0 in case AzureStackUser already exists"
       displayName: az cloud registering Azure Stack
-      # The cloud may have already been registered. We ignore any error
-      continueOnError: true
 
     - script: |
         az login --service-principal -u $(sp_app_id) \
           -p $(sp_secret) \
           --tenant $(sp_tenant_id)
       displayName: az login with service principal
+
+    - script: az cloud set --name AzureStackUser
+      displayName: Switch az cli to use Azure Stack cloud
 
     - script: az account set -s $(azs_subscription_id)
       displayName: Set az account to the right subscription id
