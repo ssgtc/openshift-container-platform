@@ -8,10 +8,18 @@
 #     azs_suffix_keyvault_dns: use an endpoint for your Azure Stack (example: .vault.local.azurestack.external)
 #     azs_subscription_id: Subscrition ID to use to test the deployment of OpenShift on Azure Stack
 #     azs_location: Azure Stack location to use
+#
 # * Service Principal needed vars:
 #     sp_app_id: Service Principal Application ID
 #     sp_tenant_id: Service Principal Tenant ID
 #     sp_secret: Service Principal Secret (must be stored encrypted, see: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables)
+#
+# * Templates needed vars:
+#     arm_rhsm_username_or_org_Id: Red Hat Subscription Manager Username or Organization ID
+#     arm_rhsm_pool_id: The Red Hat Subscription Manager Pool ID that contains your OpenShift entitlements for compute nodes
+#     arm_rhsm_broker_pool_id: The Red Hat Subscription Manager Pool ID that contains your OpenShift entitlements for masters and infra nodes. If you don't have different pool IDs, enter same pool ID as 'arm_rhsm_pool_id'
+#     arm_rhsm_password_or_activation_key: Red Hat Subscription Manager password or activation key(must be stored encrypted, see: https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch#secret-variables) 
+#     
 trigger:
 - stack311*
 
@@ -80,6 +88,13 @@ stages:
           --vault-name  $(keyvault_name) \
           -n openshiftPassword --value $admin_pass
       displayName: generate and store the admin password in keyvault
+
+    - script: |
+        az keyvault secret set \
+          --vault-name  $(keyvault_name) \
+          -n rhsmPasswordOrActivationKey  --value $(arm_rhsm_password_or_activation_key)
+      displayName: store the Red Hat Subscription Manager password in keyvault
+
     # - script: |
     #     az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
     #       --name ocp \
