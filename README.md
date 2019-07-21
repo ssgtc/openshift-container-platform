@@ -344,4 +344,4 @@ You can configure additional settings per the official (<a href="https://docs.op
 
 | Cloud | Master Cluster type | Number of Load Balancers for Masters | Certificates | Pipeline Status |
 | ----- | ------------------- | ---------------------------------- | ------------ | --------------- |
-| Azure Stack | public |  1 | self signed | [![Build Status](https://dev.azure.com/soprasteria/openshift-container-platform/_apis/build/status/ssgtc.openshift-container-platform?branchName=stack311ci&jobName=OCP%20with%201%20Master%20LB%20and%20self%20signed%20certificates)](https://dev.azure.com/soprasteria/openshift-container-platform/_build/latest?definitionId=220&branchName=stack311ci) |
+| Azure Stack | public |  2 | self signed | [![Build Status](https://dev.azure.com/soprasteria/openshift-container-platform/_apis/build/status/ssgtc.openshift-container-platform?branchName=stack311ci&jobName=OCP%20with%201%20Master%20LB%20and%20self%20signed%20certificates)](https://dev.azure.com/soprasteria/openshift-container-platform/_build/latest?definitionId=220&branchName=stack311ci) |
