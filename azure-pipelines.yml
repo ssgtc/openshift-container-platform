@@ -22,11 +22,12 @@ stages:
 - stage: azs_deploy
   displayName: Azure Stack Deploy
   jobs:
-  - job: azs_ocp_1master_selfsignedcerts
+  - job: azs_ocp_1masterlb_selfsignedcerts
     displayName: OCP with 1 Master LB and self signed certificates
     pool: $(azs_pool_name)
     variables:
-      rg_name: ci_ocp_1_master_sscerts_$(local_id)
+      rg_name: ci_ocp_1_mlb_sscerts_$(local_id)
+      keyvault_name: vault-1mlbsscerts-$(Build.BuildId)
     steps:
 
     # The cloud may have already been registered. We ignore any error
@@ -60,12 +61,19 @@ stages:
 
     - script: |
         az keyvault create \
-          -n keyvault-ciocp-$(Build.BuildId) \
+          -n $(keyvault_name) \
           -g $(rg_name) \
           -l $(azs_location) \
           --enabled-for-template-deployment true
       displayName: create a keyvault
     
+    - script: |
+        az keyvault secret set \
+          --vault-name $(keyvault_name) \
+          -n sshPrivateKey \
+          --file $(local_id)
+      displayName: store ssh private key in keyvault
+      
     # - script: |
     #     az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
     #       --name ocp \
