@@ -2,15 +2,11 @@ variables:
   myvar: debug
 
 trigger:
-- stack*
+- stack311*
 
 pool:
-  - name: $(pool_name)
+  - name: azblue
 
 steps:
 - script: echo Hello, world!
   displayName: 'say helloworld'
-
-- script: |
-    echo $(pool_name)
-  displayName: 'display the pool name'
