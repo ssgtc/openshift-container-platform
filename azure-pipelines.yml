@@ -54,7 +54,7 @@ stages:
         az group create -n $(rg_name) -l $(azs_location)
       displayName: create a resource group
 
-    - script: ssh-keygen -t rsa -b 4096 -C "auto generated ssh key" -f $(local_id)
+    - script: ssh-keygen -t rsa -b 4096 -C "auto generated ssh key" -f $(local_id) -P ''
       displayName: generate ssh-key
 
     - script: cat $(local_id).pub
