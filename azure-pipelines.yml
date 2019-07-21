@@ -27,6 +27,8 @@ stages:
           --suffix-storage-endpoint "$(azs_suffix_storage_endpoint)" \
           --suffix-keyvault-dns "$(azs_suffix_keyvault_dns)"
       displayName: az cloud registering Azure Stack
+      # The cloud may have already been registered. We ignore any error
+      continueOnError: true
 
     - script: |
         az login --service-principal -u $(sp_app_id) \
