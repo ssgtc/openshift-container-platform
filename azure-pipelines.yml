@@ -59,7 +59,7 @@ stages:
 
     - script: |
         az keyvault create \
-          -n keyvault_$(local_id) \
+          -n keyvault-ciocp-$(Build.BuildId) \
           -g $(rg_name) \
           -l $(azs_location) \
           --enabled-for-template-deployment true
