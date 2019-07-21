@@ -8,6 +8,10 @@
 #     azs_suffix_keyvault_dns: use an endpoint for your Azure Stack (example: .vault.local.azurestack.external)
 #     azs_subscription_id: Subscrition ID to use to test the deployment of OpenShift on Azure Stack
 #     azs_location: Azure Stack location to use
+#     azs_redhat_publisher: vm image publisher in the azure stack marketplace
+#     azs_redhat_offer: vm image offer in the azure stack marketplace
+#     azs_redhat_sku: vm image sku in the azure stack marketplace
+#     azs_redhat_version: vm image version in the azure stack marketplace
 #
 # * Service Principal needed vars:
 #     sp_app_id: Service Principal Application ID
@@ -95,15 +99,28 @@ stages:
           -n rhsmPasswordOrActivationKey  --value $(arm_rhsm_password_or_activation_key)
       displayName: store the Red Hat Subscription Manager password in keyvault
 
-    # - script: |
-    #     az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
-    #       --name ocp \
-    #       -g $(rg_name) \
-    #       --parameters "$(Build.SourcesDirectory)/azuredeploy.parameters.json" \
-    #       --parameters "storageKind=managed" \
-    #       --parameters "openshiftClusterPrefix=ocp1mastersscerts" \
-    #       --parameters "osImageType=marketplace" \
-    #       --parameters "adminUsername=ocpadmin" \
+    - script: |
+        echo '{ "publisher": "$(azs_redhat_publisher)", "offer": "$(azs_redhat_offer)", "sku": "$(azs_redhat_sku)", "version": "$(azs_redhat_version)" }' > rhel_image.json
+        cat rhel_image.json
+        az group deployment create --template-file $(Build.SourcesDirectory)/azuredeploy.json \
+          --name ocp \
+          -g $(rg_name) \
+          --parameters "@$(Build.SourcesDirectory)/azuredeploy.parameters.json" \
+          "storageKind=managed" \
+          "openshiftClusterPrefix=ocp1mlbsscerts" \
+          "osImageType=marketplace" \
+          "adminUsername=ocpadmin" \
+          "rhsmUsernameOrOrgId=$(arm_rhsm_username_or_org_Id)" \ 
+          "rhsmPoolId=$(arm_rhsm_pool_id)" \
+          "rhsmBrokerPoolId=$(arm_rhsm_pool_id)" \
+          "sshPublicKey=`cat $(local_id).pub`" \
+          "keyVaultSubscriptionId=$(azs_subscription_id)" \
+          "keyVaultResourceGroup=$(rg_name)" \
+          "keyVaultName=$(keyvault_name)"  \
+          "automaticDeployment=manual" \
+          "automaticPrep=manual" \
+          "marketplaceOsImage=@rhel_image.json"
+          
 
           
 
