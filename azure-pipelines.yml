@@ -29,17 +29,19 @@ trigger:
 
 variables:
   local_id: $(Build.BuildNumber).$(Build.BuildId)
+  #Must be changed according to repo/branch
+  artifacts_location: https://raw.githubusercontent.com/ssgtc/openshift-container-platform/stack311ci
 
 stages:
 - stage: azs_deploy
   displayName: Azure Stack Deploy
   jobs:
-  - job: azs_ocp_1masterlb_selfsignedcerts
-    displayName: OCP with 1 Master LB and self signed certificates
+  - job: azs_ocp_2masterlb_selfsignedcerts
+    displayName: OCP with 2 Master LB and self signed certificates
     pool: $(azs_pool_name)
     variables:
-      rg_name: ci_ocp_1_mlb_sscerts_$(local_id)
-      keyvault_name: vault-1mlbsscerts-$(Build.BuildId)
+      rg_name: ci_ocp_2_mlb_sscerts_$(local_id)
+      keyvault_name: vault-2mlbsscerts-$(Build.BuildId)
     steps:
 
     # The cloud may have already been registered. We ignore any error
@@ -114,8 +116,9 @@ stages:
           --name ocp \
           -g $(rg_name) \
           --parameters @$(Build.SourcesDirectory)/azuredeploy.parameters.json \
+          _artifactsLocation=$(artifacts_location) \
           storageKind=managed \
-          openshiftClusterPrefix=ocp1mlbsscerts \
+          openshiftClusterPrefix=ocp2mlbsscerts \
           osImageType=marketplace \
           adminUsername=ocpadmin \
           rhsmUsernameOrOrgId=@rhsm_user \
