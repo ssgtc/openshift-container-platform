@@ -29,25 +29,13 @@ trigger:
 
 variables:
   local_id: $(Build.BuildNumber).$(Build.BuildId)
-  #Must be changed according to repo/branch
-  artifacts_location: https://raw.githubusercontent.com/ssgtc/openshift-container-platform/stack311ci
+  #Make artifacts_location dynamic
+  artifacts_location: https://raw.githubusercontent.com/$(Build.Repository.Name)/$(Build.SourceBranchName)
 
 stages:
 - stage: azs_deploy
   displayName: Azure Stack Deploy
   jobs:
-  - job: debug
-    displayName: Debug
-    pool: $(azs_pool_name)
-    steps:
-    - script: |
-        echo "Project id: $(Build.TriggeredBy.ProjectID)"
-        echo "Rpository Name: $(Build.Repository.Name)"
-        echo "Repository id: $(Build.Repository.ID)"
-        echo "Repository Uri: $(Build.Repository.Uri)"
-        echo "Branch: $(Build.SourceBranchName)"
-      displayName: debug some vars
-
   # The cloud may have already been registered. We ignore any error
   - job: azs_ocp_2masterlb_selfsignedcerts
     displayName: OCP with 2 Master LB and self signed certificates
