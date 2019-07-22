@@ -392,6 +392,75 @@ echo $(date) " - Running Prerequisites via Ansible Playbook"
 runuser -l $SUDOUSER -c "ansible-playbook -f 30 /usr/share/ansible/openshift-ansible/playbooks/prerequisites.yml"
 echo $(date) " - Prerequisites check complete"
 
+# Configure cluster for private masters
+if [[ $MASTERCLUSTERTYPE == "public" ]]
+then
+    echo $(date) " - Configure cluster to use a dedicated private LB dedicated to API requests"
+    echo $(date) " - 1/ Manage masters to resolve them self while requesting API"
+    runuser -l $SUDOUSER -c "mkdir /tmp/openshift-manage-dnsmasq"
+    cat > /tmp/openshift-manage-dnsmasq/masters_dnsmasq.hosts <<EOF
+{{ ansible_eth0.ipv4.address }}  {{ openshift_master_cluster_hostname }}
+EOF
+        cat > /tmp/openshift-manage-dnsmasq/nodes_dnsmasq.hosts <<EOF
+$PRIVATEIP  {{ openshift_master_cluster_hostname }}
+EOF
+
+    cat > /tmp/openshift-manage-dnsmasq/playbook.yaml <<EOF
+- hosts: nodes
+  tasks:
+  - name: ensure dnsmasq is installed
+    yum:
+      name: dnsmasq
+      state: installed
+    become: true
+
+  - name: override openshift_master_cluster_hostname in /etc/dnsmasq.hosts with the LB IP address
+    template:
+      src: /tmp/openshift-manage-dnsmasq/nodes_dnsmasq.hosts
+      dest: /etc/dnsmasq.hosts
+      owner: root
+      group: root
+      seuser: system_u
+      serole: object_r
+      setype: dnsmasq_etc_t
+      mode: 0755
+    become: true
+
+- hosts: masters
+  tasks:
+  - name: override openshift_master_cluster_hostname in /etc/dnsmasq.hosts with the local IP address
+    template:
+      src: /tmp/openshift-manage-dnsmasq/masters_dnsmasq.hosts
+      dest: /etc/dnsmasq.hosts
+      owner: root
+      group: root
+      seuser: system_u
+      serole: object_r
+      setype: dnsmasq_etc_t
+      mode: 0755
+    become: true
+
+- hosts: nodes
+  - name: Ensure additional hosts stanza is present in dnsmasq.conf
+    lineinfile:
+      path: /etc/dnsmasq.conf
+      regexp: '^addn-hosts='
+      line: addn-hosts=/etc/dnsmasq.hosts
+    become: true
+    notify:
+    - restart dnsmasq
+
+  handlers:
+  - name: restart dnsmasq
+    systemd:
+      state: restarted
+      name: dnsmasq.service
+    become: true
+EOF
+    runuser -l $SUDOUSER -c "ansible-playbook -f 30 /tmp/openshift-manage-dnsmasq/playbook.yaml"
+    rm -rf /tmp/openshift-manage-dnsmasq
+fi
+
 # Initiating installation of OpenShift Container Platform using Ansible Playbook
 echo $(date) " - Installing OpenShift Container Platform via Ansible Playbook"
 runuser -l $SUDOUSER -c "ansible-playbook -f 30 /usr/share/ansible/openshift-ansible/playbooks/deploy_cluster.yml"
@@ -496,47 +565,6 @@ if [[ $MASTERCLUSTERTYPE == "private" ]]
 then
 	echo $(date) " - Configure cluster for private masters"
 	runuser -l $SUDOUSER -c "ansible-playbook -f 30 ~/openshift-container-platform-playbooks/activate-private-lb-fqdn.31x.yaml"
-else
-    echo $(date) " - Configure cluster to use a dedicated private LB dedicated to API requests"
-
-    runuser -l $SUDOUSER -c "mkdir /tmp/openshift-manage-dnsmasq"
-    cat > /tmp/openshift-manage-dnsmasq/dnsmasq.hosts <<EOF
-{{ ansible_eth0.ipv4.address }}  {{ openshift_master_cluster_hostname }}
-EOF
-
-    cat > /tmp/openshift-manage-dnsmasq/playbook.yaml <<EOF
-- hosts: masters
-  tasks:
-  - name: override openshift_master_cluster_hostname in /etc/dnsmasq.hosts
-    template:
-      src: /tmp/openshift-manage-dnsmasq/dnsmasq.hosts
-      dest: /etc/dnsmasq.hosts
-      owner: root
-      group: root
-      seuser: system_u
-      serole: object_r
-      setype: dnsmasq_etc_t
-      mode: 0755
-    become: true
-
-  - name: Ensure additional hosts stanza is present in dnsmasq.conf
-    lineinfile:
-      path: /etc/dnsmasq.conf
-      regexp: '^addn-hosts='
-      line: addn-hosts=/etc/dnsmasq.hosts
-    become: true
-    notify:
-    - restart dnsmasq
-
-  handlers:
-  - name: restart dnsmasq
-    systemd:
-      state: restarted
-      name: dnsmasq.service
-    become: true
-EOF
-    runuser -l $SUDOUSER -c "ansible-playbook -f 30 /tmp/openshift-manage-dnsmasq/playbook.yaml"
-    rm -rf /tmp/openshift-manage-dnsmasq
 fi
 
 # Delete yaml files

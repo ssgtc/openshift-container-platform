@@ -39,9 +39,13 @@ stages:
   - job: azs_ocp_2masterlb_selfsignedcerts
     displayName: OCP with 2 Master LB and self signed certificates
     pool: $(azs_pool_name)
+    timeoutInMinutes: 120
     variables:
       rg_name: ci_ocp_2_mlb_sscerts_$(local_id)
       keyvault_name: vault-2mlbsscerts-$(Build.BuildId)
+      zone: contoso.com
+      masterapi_sname: internal
+      masterapi_ip: 10.1.0.200
     steps:
 
     # The cloud may have already been registered. We ignore any error
@@ -107,6 +111,17 @@ stages:
           -n aadClientSecret  --value fake
       displayName: store a fake aadClientSecret in keyvault because it's always get
 
+    # - script: |
+    #     az network dns zone create \
+    #       --resource-group $(rg_name) \
+    #       --name $(zone)
+    #     az network dns record-set a add-record \
+    #       -n $(masterapi_sname) \
+    #       -g $(rg_name) \
+    #       -z $(zone) \
+    #       -a $(masterapi_ip)
+    #   displayName: Create a DNS zone and add the internal api record
+      
     - script: |
         echo '{ "publisher": "$(azs_redhat_publisher)", "offer": "$(azs_redhat_offer)", "sku": "$(azs_redhat_sku)", "version": "$(azs_redhat_version)" }' > rhel_image.json
         cat rhel_image.json
@@ -134,9 +149,13 @@ stages:
           virtualNetworkName=vnet-$(local_id) \
           masterSubnetName=mastersubnet \
           infraSubnetName=infrasubnet \
-          nodeSubnetName=nodesubnet
+          nodeSubnetName=nodesubnet \
+          masterClusterDnsType=default \
+          domainName=none \
+          masterPrivateClusterIp=$(masterapi_ip) \
+          masterAPIDns=$(masterapi_sname).$(zone)
       displayName: run the ARM template
-          
 
           
 
+          
