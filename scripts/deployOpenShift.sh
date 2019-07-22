@@ -441,6 +441,7 @@ EOF
     become: true
 
 - hosts: nodes
+  tasks:
   - name: Ensure additional hosts stanza is present in dnsmasq.conf
     lineinfile:
       path: /etc/dnsmasq.conf
