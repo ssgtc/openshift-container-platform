@@ -133,33 +133,30 @@ stages:
           -g $(rg_name) \
           --parameters @$(Build.SourcesDirectory)/azuredeploy.parameters.json \
           _artifactsLocation=$(artifacts_location) \
-          storageKind=managed \
-          openshiftClusterPrefix=ocp2mlbsscerts \
-          osImageType=marketplace \
           adminUsername=ocpadmin \
-          rhsmUsernameOrOrgId=@rhsm_user \
-          rhsmPoolId=@rhsm_pool_id \
-          rhsmBrokerPoolId=@rhsm_pool_id \
-          sshPublicKey=@$(local_id).pub \
-          keyVaultSubscriptionId=$(azs_subscription_id) \
-          keyVaultResourceGroup=$(rg_name) \
-          keyVaultName=$(keyvault_name)  \
           automaticDeployment=automatic \
           automaticPrep=automatic \
-          marketplaceOsImage=@rhel_image.json \
-          virtualNetworkName=vnet-$(local_id) \
-          masterSubnetName=mastersubnet \
-          infraSubnetName=infrasubnet \
-          nodeSubnetName=nodesubnet \
-          masterClusterDnsType=default \
-          domainName=none \
-          masterPrivateClusterIp=$(masterapi_ip) \
-          masterAPIDns=$(masterapi_sname).$(zone) \
           dockerRegistryRealm=$(azs_suffix_storage_endpoint) \
+          domainName=none \
+          keyVaultName=$(keyvault_name)  \
+          keyVaultResourceGroup=$(rg_name) \
+          keyVaultSubscriptionId=$(azs_subscription_id) \
+          infraInstanceCount=2 \
+          infraSubnetName=infrasubnet \
+          marketplaceOsImage=@rhel_image.json \
+          masterAPIDns=$(masterapi_sname).$(zone) \
+          masterClusterDnsType=default \
+          masterPrivateClusterIp=$(masterapi_ip) \
+          masterSubnetName=mastersubnet \
           nodeInstanceCount=1 \
-          infraInstanceCount=2
+          nodeSubnetName=nodesubnet \
+          openshiftClusterPrefix=ocp2mlbsscerts \
+          osImageType=marketplace \
+          rhsmBrokerPoolId=@rhsm_pool_id \
+          rhsmPoolId=@rhsm_pool_id \
+          rhsmUsernameOrOrgId=@rhsm_user \
+          sshPublicKey=@$(local_id).pub \
+          storageKind=managed \
+          virtualNetworkName=vnet-$(local_id)
       displayName: run the ARM template
-
-          
-
-          
+      
