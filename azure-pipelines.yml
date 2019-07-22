@@ -36,6 +36,19 @@ stages:
 - stage: azs_deploy
   displayName: Azure Stack Deploy
   jobs:
+  - job: debug
+    displayName: Debug
+    pool: $(azs_pool_name)
+    steps:
+    - script: |
+        echo "Project id: $(Build.TriggeredBy.ProjectID)"
+        echo "Rpository Name: $(Build.Repository.Name)"
+        echo "Repository id: $(Build.Repository.ID)"
+        echo "Repository Uri: $(Build.Repository.Uri)"
+        echo "Branch: $(Build.SourceBranchName)"
+      displayName: debug some vars
+
+  # The cloud may have already been registered. We ignore any error
   - job: azs_ocp_2masterlb_selfsignedcerts
     displayName: OCP with 2 Master LB and self signed certificates
     pool: $(azs_pool_name)
