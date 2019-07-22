@@ -154,7 +154,8 @@ stages:
           masterClusterDnsType=default \
           domainName=none \
           masterPrivateClusterIp=$(masterapi_ip) \
-          masterAPIDns=$(masterapi_sname).$(zone)
+          masterAPIDns=$(masterapi_sname).$(zone) \
+          dockerRegistryRealm=$(azs_suffix_storage_endpoint)
       displayName: run the ARM template
 
           

@@ -508,6 +508,13 @@
 			"metadata": {
 				"description": "Determine if OS must be automatically prepared ('automatic' value is mandatory if 'automaticDeployment' has been also set to 'automatic'"
 			}
+		},
+		"dockerRegistryRealm": {
+			"type": "string",
+			"defaultValue": "core.windows.net",
+			"metadata": {
+				"description": "Realm that will be used in openshift_hosted_registry_storage_azure_blob_realm in ansible inventory"
+			}
 		}
 	},
 	"variables": {
@@ -2723,6 +2730,9 @@
 					},
 					"minorVersion": {
 						"value": "[parameters('minorVersion')]"
+					},
+					"dockerRegistryRealm": {
+						"value": "[parameters('dockerRegistryRealm')]"
 					}
 				}
 			}

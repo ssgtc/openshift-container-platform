@@ -43,6 +43,7 @@ export CUSTOMROUTINGCERTTYPE=${36}
 export CUSTOMMASTERCERTTYPE=${37}
 export MINORVERSION=${38}
 export MASTERAPIHOSTNAME=${39}
+export DOCKERREGISTRYREALM=${40}
 export BASTION=$(hostname)
 
 # Set CNS to default storage type.  Will be overridden later if Azure is true
@@ -77,7 +78,6 @@ then
     export DOCKERREGISTRYREALM=core.usgovcloudapi.net
 	export CLOUDNAME="AzureUSGovernmentCloud"
 else
-	export DOCKERREGISTRYREALM=core.windows.net
 	export CLOUDNAME="AzurePublicCloud"
 fi
 
