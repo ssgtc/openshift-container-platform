@@ -155,7 +155,7 @@ stages:
           adminUsername=$(openshift_admin) \
           automaticDeployment=automatic \
           automaticPrep=automatic \
-          azureZoneName=contoso.internal \
+          azureZoneName=$(zone) \
           dockerRegistryRealm=$(azs_suffix_storage_endpoint) \
           domainName=none \
           keyVaultName=$(keyvault_name)  \
@@ -173,14 +173,14 @@ stages:
           nodeSubnetName=nodesubnet \
           openshiftClusterPrefix=ocp2mlbsscerts \
           osImageType=marketplace \
+          routingSubDomainType=custom \
+          routingSubDomain=apps.$(zone)
           rhsmBrokerPoolId=@rhsm_pool_id \
           rhsmPoolId=@rhsm_pool_id \
           rhsmUsernameOrOrgId=@rhsm_user \
           sshPublicKey=@$(local_id).pub \
           storageKind=managed \
           useAzureDns=true \
-          virtualNetworkName=vnet-$(local_id) \
-          automaticDeployment=manual \
-          automaticPrep=manual
+          virtualNetworkName=vnet-$(local_id) 
       displayName: run the ARM template
       

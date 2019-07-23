@@ -44,6 +44,11 @@ export CUSTOMMASTERCERTTYPE=${37}
 export MINORVERSION=${38}
 export MASTERAPIHOSTNAME=${39}
 export DOCKERREGISTRYREALM=${40}
+export AZUREDNSUSE=${41}
+export AZUREDNSZONE=${42}
+export AZUREDNSNS1=${43}
+export AZUREDNSNS2=${44}
+
 export BASTION=$(hostname)
 
 # Set CNS to default storage type.  Will be overridden later if Azure is true
@@ -51,6 +56,7 @@ export CNS_DEFAULT_STORAGE=true
 
 # Setting DOMAIN variable
 export DOMAIN=`domainname -d`
+
 
 # Determine if Commercial Azure or Azure Government
 CLOUD=$( curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/location?api-version=2017-04-02&format=text" | cut -c 1-2 )
@@ -145,9 +151,16 @@ then
 openshift_master_cluster_public_hostname=$PRIVATEDNS
 openshift_master_cluster_public_vip=$PRIVATEIP"
 else
-	MASTERCLUSTERADDRESS="openshift_master_cluster_hostname=$MASTERAPIHOSTNAME
+    if [[ $AZUREDNSUSE == "true" ]]
+    then
+        	MASTERCLUSTERADDRESS="openshift_master_cluster_hostname=${MASTERAPIHOSTNAME}.${AZUREDNSZONE}
 openshift_master_cluster_public_hostname=$MASTERPUBLICIPHOSTNAME
 openshift_master_cluster_public_vip=$MASTERPUBLICIPADDRESS"
+    else
+        MASTERCLUSTERADDRESS="openshift_master_cluster_hostname=$MASTERAPIHOSTNAME
+openshift_master_cluster_public_hostname=$MASTERPUBLICIPHOSTNAME
+openshift_master_cluster_public_vip=$MASTERPUBLICIPADDRESS"
+    fi
 fi
 
 # Create Master nodes grouping
@@ -364,6 +377,47 @@ $cnsgroup
 [new_nodes]
 EOF
 
+if [[ $AZUREDNSUSE == "true" ]] 
+then
+    export DOMAIN=$AZUREDNSZONE
+    runuser -l $SUDOUSER -c "mkdir /tmp/openshift-manage-azuredns"
+    cat > /tmp/openshift-manage-azuredns/azure-dns.conf <<EOF
+server=/$AZUREDNSZONE/$AZUREDNSNS1
+server=/$AZUREDNSZONE/$AZUREDNSNS2
+EOF
+    cat > /tmp/openshift-manage-azuredns/playbook.yaml <<EOF
+- hosts: nodes
+  tasks:
+  - name: ensure dnsmasq is installed
+    yum:
+      name: dnsmasq
+      state: installed
+    become: true
+
+  - name: add azure dns zone NS in /etc/dnsmasq.d/azure-dns.conf
+    copy:
+      src: /tmp/openshift-manage-azuredns/azure-dns.conf
+      dest: /etc/dnsmasq.d/azure-dns.conf
+      owner: root
+      group: root
+      seuser: system_u
+      serole: object_r
+      setype: dnsmasq_etc_t
+      mode: 0755
+    become: true
+    notify:
+    - restart dnsmasq
+
+  handlers:
+  - name: restart dnsmasq
+    systemd:
+      state: restarted
+      name: dnsmasq.service
+    become: true
+EOF
+    runuser -l $SUDOUSER -c "ansible-playbook -f 30 /tmp/openshift-manage-azuredns/playbook.yaml"
+    rm -rf /tmp/openshift-manage-azuredns
+fi
 # Update WALinuxAgent
 echo $(date) " - Updating WALinuxAgent on all cluster nodes"
 runuser $SUDOUSER -c "ansible all -f 30 -b -m yum -a 'name=WALinuxAgent state=latest'"
@@ -401,12 +455,9 @@ then
     cat > /tmp/openshift-manage-dnsmasq/masters_dnsmasq.hosts <<EOF
 {{ ansible_eth0.ipv4.address }}  {{ openshift_master_cluster_hostname }}
 EOF
-        cat > /tmp/openshift-manage-dnsmasq/nodes_dnsmasq.hosts <<EOF
-$PRIVATEIP  {{ openshift_master_cluster_hostname }}
-EOF
 
     cat > /tmp/openshift-manage-dnsmasq/playbook.yaml <<EOF
-- hosts: nodes
+- hosts: masters
   tasks:
   - name: ensure dnsmasq is installed
     yum:
@@ -414,20 +465,6 @@ EOF
       state: installed
     become: true
 
-  - name: override openshift_master_cluster_hostname in /etc/dnsmasq.hosts with the LB IP address
-    template:
-      src: /tmp/openshift-manage-dnsmasq/nodes_dnsmasq.hosts
-      dest: /etc/dnsmasq.hosts
-      owner: root
-      group: root
-      seuser: system_u
-      serole: object_r
-      setype: dnsmasq_etc_t
-      mode: 0755
-    become: true
-
-- hosts: masters
-  tasks:
   - name: override openshift_master_cluster_hostname in /etc/dnsmasq.hosts with the local IP address
     template:
       src: /tmp/openshift-manage-dnsmasq/masters_dnsmasq.hosts
@@ -440,8 +477,6 @@ EOF
       mode: 0755
     become: true
 
-- hosts: nodes
-  tasks:
   - name: Ensure additional hosts stanza is present in dnsmasq.conf
     lineinfile:
       path: /etc/dnsmasq.conf

@@ -2883,6 +2883,18 @@
 					},
 					"dockerRegistryRealm": {
 						"value": "[parameters('dockerRegistryRealm')]"
+					},
+					"useAzureDns": {
+						"value": "[parameters('useAzureDns')]"
+					},
+					"azureZoneName": {
+						"value": "[parameters('azureZoneName')]"
+					},
+					"azureNS1": {
+						"value": "[if(parameters('useAzureDns'), reference(concat('Microsoft.Network/dnszones/', parameters('azureZoneName'))).nameServers[0],'8.8.8.8.')]"
+					},
+					"azureNS2": {
+						"value": "[if(parameters('useAzureDns'), reference(concat('Microsoft.Network/dnszones/', parameters('azureZoneName'))).nameServers[1],'8.8.8.8.')]"
 					}
 				}
 			}
