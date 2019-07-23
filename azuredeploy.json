@@ -2271,7 +2271,7 @@
 			  "TTL": 60,
 			  "ARecords": [
 				{
-				  "ipv4Address": "[reference(concat(variables('openshiftBastionHostname'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				  "ipv4Address": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftBastionHostname'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
 				}
 			  ]
 			}
@@ -2292,7 +2292,7 @@
 			  "TTL": 60,
 			  "ARecords": [
 				{
-				  "ipv4Address": "[reference(concat(variables('openshiftMasterHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				  "ipv4Address": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftMasterHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
 				}
 			  ]
 			}
@@ -2313,7 +2313,7 @@
 			  "TTL": 60,
 			  "ARecords": [
 				{
-				  "ipv4Address": "[reference(concat(variables('openshiftInfraHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				  "ipv4Address": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftInfraHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
 				}
 			  ]
 			}
@@ -2334,7 +2334,7 @@
 			  "TTL": 60,
 			  "ARecords": [
 				{
-				  "ipv4Address": "[reference(concat(variables('openshiftNodeHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				  "ipv4Address": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftNodeHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
 				}
 			  ]
 			}
@@ -2355,7 +2355,7 @@
 			  "TTL": 60,
 			  "ARecords": [
 				{
-				  "ipv4Address": "[reference(concat(variables('openshiftCnsHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				  "ipv4Address": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftCnsHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
 				}
 			  ]
 			}
