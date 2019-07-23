@@ -148,6 +148,7 @@ stages:
           masterClusterDnsType=default \
           masterPrivateClusterIp=$(masterapi_ip) \
           masterSubnetName=mastersubnet \
+          minorVersion=117 \
           nodeInstanceCount=1 \
           nodeSubnetName=nodesubnet \
           openshiftClusterPrefix=ocp2mlbsscerts \
