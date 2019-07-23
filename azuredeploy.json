@@ -2362,7 +2362,7 @@
 		},  {
 			"condition": "[and(parameters('useAzureDns'), variables('deployMasterAPIPrivateLb'))]",
 			"type": "Microsoft.Network/dnszones/a",
-			"name": "[parameters('masterAPIDns')]",
+			"name": "[concat(parameters('azureZoneName'), '/',parameters('masterAPIDns'))]",
 			"location": "[resourceGroup().location]",
 			"dependsOn": [
 			  "[parameters('azureZoneName')]"
