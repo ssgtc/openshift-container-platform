@@ -286,7 +286,7 @@
 			}
 		},
 		"useAzureDns": {
-			"type": "bool",
+			"type": "string",
 			"metadata": {
 				"description": "Create and use an Azure DNS for internal resolution"
 			}

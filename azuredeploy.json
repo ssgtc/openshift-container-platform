@@ -2885,7 +2885,7 @@
 						"value": "[parameters('dockerRegistryRealm')]"
 					},
 					"useAzureDns": {
-						"value": "[parameters('useAzureDns')]"
+						"value": "[if(parameters('useAzureDns'), 'true', 'false')]"
 					},
 					"azureZoneName": {
 						"value": "[parameters('azureZoneName')]"
