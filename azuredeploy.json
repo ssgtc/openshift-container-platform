@@ -2255,13 +2255,13 @@
 			"condition": "[parameters('useAzureDns')]",
 			"type": "Microsoft.Network/dnszones",
       		"name": "[parameters('azureZoneName')]",
-      		"location": "[resourceGroup().location]",
+      		"location": "global",
       		"properties": {}
 		}, {
 			"condition": "[parameters('useAzureDns')]",
 			"type": "Microsoft.Network/dnszones/a",
 			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftBastionHostname'), '-nic'))]",
-			"location": "[resourceGroup().location]",
+			"location": "global",
 			"dependsOn": [
 			  "[parameters('azureZoneName')]",
 			  "[concat('Microsoft.Network/networkInterfaces/', variables('openshiftBastionHostname'), '-nic')]"
@@ -2300,7 +2300,7 @@
 			"condition": "[parameters('useAzureDns')]",
 			"type": "Microsoft.Network/dnszones/a",
 			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftInfraHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
-			"location": "[resourceGroup().location]",
+			"location": "global",
 			"dependsOn": [
 			  "[parameters('azureZoneName')]",
 			  "infraNicLoop"
@@ -2321,7 +2321,7 @@
 			"condition": "[parameters('useAzureDns')]",
 			"type": "Microsoft.Network/dnszones/a",
 			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftNodeHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
-			"location": "[resourceGroup().location]",
+			"location": "global",
 			"dependsOn": [
 			  "[parameters('azureZoneName')]",
 			  "nodeNicLoop"
@@ -2342,7 +2342,7 @@
 			"condition": "[and(parameters('useAzureDns'), equals(parameters('enableCNS'), 'true'))]",
 			"type": "Microsoft.Network/dnszones/a",
 			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftCnsHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
-			"location": "[resourceGroup().location]",
+			"location": "global",
 			"dependsOn": [
 			  "[parameters('azureZoneName')]",
 			  "cnsNicLoop"
@@ -2363,7 +2363,7 @@
 			"condition": "[and(parameters('useAzureDns'), variables('deployMasterAPIPrivateLb'))]",
 			"type": "Microsoft.Network/dnszones/a",
 			"name": "[concat(parameters('azureZoneName'), '/',parameters('masterAPIDns'))]",
-			"location": "[resourceGroup().location]",
+			"location": "global",
 			"dependsOn": [
 			  "[parameters('azureZoneName')]"
 			],
