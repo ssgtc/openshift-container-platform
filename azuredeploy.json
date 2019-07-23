@@ -2350,6 +2350,9 @@
 					"minorVersion": {
 						"value": "[parameters('minorVersion')]"
 					},
+					"openshiftAnsibleMinorVersion": {
+						"value": "[parameters('openshiftAnsibleMinorVersion')]"
+					},
 					"masterClusterDnsType": {
 						"value": "[parameters('masterClusterDnsType')]"
 					},
