@@ -128,9 +128,16 @@
 		},
 		"minorVersion": {
 			"type": "string",
-			"defaultValue": "82",
+			"defaultValue": "117",
 			"metadata": {
 				"description": "Minor version of OpenShift 3.11 to deploy"
+			}
+		},
+		"openshiftAnsibleMinorVersion": {
+			"type": "string",
+			"defaultValue": "123",
+			"metadata": {
+				"description": "Minor version of OpenShift ansible 3.11 to install on bastion"
 			}
 		},
 		"masterInstanceCount": {

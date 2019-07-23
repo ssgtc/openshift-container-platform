@@ -18,6 +18,7 @@ export CUSTOMDOMAIN="${14}"
 export MINORVERSION=${15}
 export CUSTOMMASTERTYPE=${16}
 export CUSTOMROUTINGTYPE=${17}
+export OCPANSIBLEMINORVERSION=${18}
 
 # Generate private keys for use by Ansible
 echo $(date) " - Generating Private keys for use by Ansible for OpenShift Installation"
@@ -89,7 +90,7 @@ echo $(date) " - Base package installation complete"
 
 # Install OpenShift utilities
 echo $(date) " - Installing OpenShift utilities"
-yum -y install openshift-ansible-3.11.${MINORVERSION}
+yum -y install openshift-ansible-3.11.${OCPANSIBLEMINORVERSION}
 echo $(date) " - OpenShift utilities installation complete"
 
 # Installing Azure CLI

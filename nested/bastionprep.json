@@ -123,6 +123,12 @@
 				"description": "Minor version of OpenShift 3.11 to deploy"
 			}
 		},
+		"openshiftAnsibleMinorVersion": {
+			"type": "string",
+			"metadata": {
+				"description": "Minor version of OpenShift ansible 3.11 to install on bastion"
+			}
+		},
 		"masterClusterDnsType": {
 			"type": "string",
 			"metadata": {
@@ -167,7 +173,7 @@
 				]
 			},
 			"protectedSettings": {
-				"commandToExecute": "[concat('bash ', parameters('bastionPrepScriptFileName'), ' ', parameters('rhsmUsernameOrOrgId'), ' ',variables('singlequote'), parameters('rhsmPasswordOrActivationKey'), variables('singlequote'), ' ', parameters('rhsmPoolId'), ' ', variables('singlequote'), parameters('sshPrivateKey'), variables('singlequote'), ' ', variables('singlequote'), parameters('adminUsername'), variables('singlequote'), ' ', variables('singlequote'), parameters('routingCertType'), variables('singlequote'), ' ', variables('singlequote'), parameters('masterCertType'), variables('singlequote'), ' ', variables('singlequote'), parameters('customRoutingCaFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customRoutingCertFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customRoutingKeyFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customMasterCaFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customMasterCertFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customMasterKeyFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('domainName'), variables('singlequote'), ' ', variables('singlequote'), parameters('minorVersion'), variables('singlequote'), ' ', variables('singlequote'), parameters('masterClusterDnsType'), variables('singlequote'), ' ', variables('singlequote'), parameters('routingSubDomainType'), variables('singlequote'))]"
+				"commandToExecute": "[concat('bash ', parameters('bastionPrepScriptFileName'), ' ', parameters('rhsmUsernameOrOrgId'), ' ',variables('singlequote'), parameters('rhsmPasswordOrActivationKey'), variables('singlequote'), ' ', parameters('rhsmPoolId'), ' ', variables('singlequote'), parameters('sshPrivateKey'), variables('singlequote'), ' ', variables('singlequote'), parameters('adminUsername'), variables('singlequote'), ' ', variables('singlequote'), parameters('routingCertType'), variables('singlequote'), ' ', variables('singlequote'), parameters('masterCertType'), variables('singlequote'), ' ', variables('singlequote'), parameters('customRoutingCaFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customRoutingCertFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customRoutingKeyFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customMasterCaFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customMasterCertFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('customMasterKeyFile'), variables('singlequote'), ' ', variables('singlequote'), parameters('domainName'), variables('singlequote'), ' ', variables('singlequote'), parameters('minorVersion'), variables('singlequote'), ' ', variables('singlequote'), parameters('masterClusterDnsType'), variables('singlequote'), ' ', variables('singlequote'), parameters('routingSubDomainType'), variables('singlequote'), ' ',variables('singlequote'), parameters('openshiftAnsibleMinorVersion'), variables('singlequote'))]"
 			}
 		}
 	}],
