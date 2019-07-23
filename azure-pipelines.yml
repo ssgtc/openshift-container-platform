@@ -136,7 +136,12 @@ stages:
     #       -z $(zone) \
     #       -a $(masterapi_ip)
     #   displayName: Create a DNS zone and add the internal api record
-      
+
+    #TODO create masterClusterDns and set masterClusterDnsType to custom 
+    #TODO manage PEERDNS=no USE_PEERDNS=no
+    #TODO manage Azure DNS
+
+    #TODO
     - script: |
         echo '{ "publisher": "$(azs_redhat_publisher)", "offer": "$(azs_redhat_offer)", "sku": "$(azs_redhat_sku)", "version": "$(azs_redhat_version)" }' > rhel_image.json
         cat rhel_image.json
@@ -150,7 +155,7 @@ stages:
           adminUsername=$(openshift_admin) \
           automaticDeployment=automatic \
           automaticPrep=automatic \
-          azureZoneName=contoso.internal
+          azureZoneName=contoso.internal \
           dockerRegistryRealm=$(azs_suffix_storage_endpoint) \
           domainName=none \
           keyVaultName=$(keyvault_name)  \
