@@ -319,11 +319,26 @@
 			"metadata": {
 				"description": "Custom domain name for access to OpenShift web console. Must be all lowercase"
 			}
-		},"masterAPIDns": {
+		},
+		"masterAPIDns": {
 			"type": "string",
 			"defaultValue": "internal.contoso.com",
 			"metadata": {
 				"description": "Custom domain name that will match the frontal IP of the private LB used for API request in case of a public Master cluster type. Must be all lowercase"
+			}
+		},
+		"useAzureDns": {
+			"type": "bool",
+			"defaultValue": false,
+			"metadata": {
+				"description": "Create and use an Azure DNS for internal resolution"
+			}
+		},
+		"azureZoneName": {
+			"type": "string",
+			"defaultValue": "contoso.internal",
+			"metadata": {
+				"description": "Custom domain zone name that will create using an Azure DNS if useAzureDns parameter is set to true"
 			}
 		},
 		"routingSubDomainType": {
@@ -1723,7 +1738,7 @@
 			"name": "[concat(variables('openshiftCnsHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')]",
 			"location": "[parameters('location')]",
 			"tags": {
-				"displayName": "OpenShiftInfraNetworkInterfaces",
+				"displayName": "OpenShiftCNSNetworkInterfaces",
 				"provider": "[variables('redHatTags').provider]",
 				"app": "[variables('redHatTags').app]",
 				"version": "[variables('redHatTags').version]",
@@ -2237,6 +2252,130 @@
 				}
 			}
 		}, {
+			"condition": "[parameters('useAzureDns')]",
+			"type": "Microsoft.Network/dnszones",
+      		"name": "[parameters('azureZoneName')]",
+      		"location": "[resourceGroup().location]",
+      		"properties": {}
+		}, {
+			"condition": "[parameters('useAzureDns')]",
+			"type": "Microsoft.Network/dnszones/a",
+			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftBastionHostname'), '-nic'))]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+			  "[parameters('azureZoneName')]",
+			  "[concat('Microsoft.Network/networkInterfaces/', variables('openshiftBastionHostname'), '-nic')]"
+			],
+			"properties": {
+			  "displayName": "DnsARecordBastion",
+			  "TTL": 60,
+			  "ARecords": [
+				{
+				  "ipv4Address": "[reference(concat(variables('openshiftBastionHostname'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				}
+			  ]
+			}
+		}, {
+			"condition": "[parameters('useAzureDns')]",
+			"type": "Microsoft.Network/dnszones/a",
+			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftMasterHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+			  "[parameters('azureZoneName')]",
+			  "masterNicLoop"
+			],
+			"copy": {
+				"name": "masterARecordLoop",
+				"count": "[parameters('masterInstanceCount')]"
+			},
+			"properties": {
+			  "TTL": 60,
+			  "ARecords": [
+				{
+				  "ipv4Address": "[reference(concat(variables('openshiftMasterHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				}
+			  ]
+			}
+		}, {
+			"condition": "[parameters('useAzureDns')]",
+			"type": "Microsoft.Network/dnszones/a",
+			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftInfraHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+			  "[parameters('azureZoneName')]",
+			  "infraNicLoop"
+			],
+			"copy": {
+				"name": "infraARecordLoop",
+				"count": "[parameters('infraInstanceCount')]"
+			},
+			"properties": {
+			  "TTL": 60,
+			  "ARecords": [
+				{
+				  "ipv4Address": "[reference(concat(variables('openshiftInfraHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				}
+			  ]
+			}
+		}, {
+			"condition": "[parameters('useAzureDns')]",
+			"type": "Microsoft.Network/dnszones/a",
+			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftNodeHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+			  "[parameters('azureZoneName')]",
+			  "nodeNicLoop"
+			],
+			"copy": {
+				"name": "nodeARecordLoop",
+				"count": "[parameters('nodeInstanceCount')]"
+			},
+			"properties": {
+			  "TTL": 60,
+			  "ARecords": [
+				{
+				  "ipv4Address": "[reference(concat(variables('openshiftNodeHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				}
+			  ]
+			}
+		}, {
+			"condition": "[and(parameters('useAzureDns'), equals(parameters('enableCNS'), 'true'))]",
+			"type": "Microsoft.Network/dnszones/a",
+			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftCnsHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+			  "[parameters('azureZoneName')]",
+			  "cnsNicLoop"
+			],
+			"copy": {
+				"name": "cnsARecordLoop",
+				"count": "[parameters('cnsInstanceCount')]"
+			},
+			"properties": {
+			  "TTL": 60,
+			  "ARecords": [
+				{
+				  "ipv4Address": "[reference(concat(variables('openshiftCnsHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')).ipConfigurations[0].properties.privateIPAddress]"
+				}
+			  ]
+			}
+		},  {
+			"condition": "[and(parameters('useAzureDns'), variables('deployMasterAPIPrivateLb'))]",
+			"type": "Microsoft.Network/dnszones/a",
+			"name": "[parameters('masterAPIDns')]",
+			"location": "[resourceGroup().location]",
+			"dependsOn": [
+			  "[parameters('azureZoneName')]"
+			],
+			"properties": {
+			  "TTL": 60,
+			  "ARecords": [
+				{
+				  "ipv4Address": "[parameters('masterPrivateClusterIp')]"
+				}
+			  ]
+			}
+		},{
 			"condition": "[equals(parameters('automaticPrep'), 'automatic')]",
 			"type": "Microsoft.Resources/deployments",
 			"name": "bastionPrep",

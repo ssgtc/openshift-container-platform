@@ -46,7 +46,7 @@ stages:
       keyvault_name: vault-2mlbsscerts-$(Build.BuildId)
       openshift_admin: ocpadmin
       zone: contoso.com
-      masterapi_sname: internal
+      masterapi_sname: internal-api
       masterapi_ip: 10.1.0.200
     steps:
 
@@ -150,6 +150,7 @@ stages:
           adminUsername=$(openshift_admin) \
           automaticDeployment=automatic \
           automaticPrep=automatic \
+          azureZoneName=contoso.internal
           dockerRegistryRealm=$(azs_suffix_storage_endpoint) \
           domainName=none \
           keyVaultName=$(keyvault_name)  \
@@ -158,7 +159,7 @@ stages:
           infraInstanceCount=2 \
           infraSubnetName=infrasubnet \
           marketplaceOsImage=@rhel_image.json \
-          masterAPIDns=$(masterapi_sname).$(zone) \
+          masterAPIDns=$(masterapi_sname) \
           masterClusterDnsType=default \
           masterPrivateClusterIp=$(masterapi_ip) \
           masterSubnetName=mastersubnet \
@@ -172,6 +173,9 @@ stages:
           rhsmUsernameOrOrgId=@rhsm_user \
           sshPublicKey=@$(local_id).pub \
           storageKind=managed \
-          virtualNetworkName=vnet-$(local_id)
+          useAzureDns=true \
+          virtualNetworkName=vnet-$(local_id) \
+          automaticDeployment=manual \
+          automaticPrep=manual
       displayName: run the ARM template
       
