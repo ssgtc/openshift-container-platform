@@ -174,7 +174,7 @@ stages:
           openshiftClusterPrefix=ocp2mlbsscerts \
           osImageType=marketplace \
           routingSubDomainType=custom \
-          routingSubDomain=apps.$(zone)
+          routingSubDomain=apps.$(zone) \
           rhsmBrokerPoolId=@rhsm_pool_id \
           rhsmPoolId=@rhsm_pool_id \
           rhsmUsernameOrOrgId=@rhsm_user \
