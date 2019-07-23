@@ -44,6 +44,7 @@ stages:
     variables:
       rg_name: ci_ocp_2_mlb_sscerts_$(local_id)
       keyvault_name: vault-2mlbsscerts-$(Build.BuildId)
+      openshift_admin: ocpadmin
       zone: contoso.com
       masterapi_sname: internal
       masterapi_ip: 10.1.0.200
@@ -89,9 +90,22 @@ stages:
     - script: |
         az keyvault secret set \
           --vault-name $(keyvault_name) \
+          -n sshPublicKey \
+          --file $(local_id).pub
+      displayName: store ssh pub key in keyvault
+
+    - script: |
+        az keyvault secret set \
+          --vault-name $(keyvault_name) \
           -n sshPrivateKey \
           --file $(local_id)
       displayName: store ssh private key in keyvault
+
+    - script: |
+        az keyvault secret set \
+          --vault-name  $(keyvault_name) \
+          -n openshiftAdmin --value $(openshift_admin)
+      displayName: store the admin login in keyvault
 
     - script: |
         admin_pass=`openssl rand -base64 32`
@@ -133,7 +147,7 @@ stages:
           -g $(rg_name) \
           --parameters @$(Build.SourcesDirectory)/azuredeploy.parameters.json \
           _artifactsLocation=$(artifacts_location) \
-          adminUsername=ocpadmin \
+          adminUsername=$(openshift_admin) \
           automaticDeployment=automatic \
           automaticPrep=automatic \
           dockerRegistryRealm=$(azs_suffix_storage_endpoint) \
