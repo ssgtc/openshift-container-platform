@@ -1638,7 +1638,8 @@
 			},
 			"dependsOn": [
 				"[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
-				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftBastionHostname'), '-nsg')]"
+				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftBastionHostname'), '-nsg')]",
+				"[variables('bastionPublicIp')]"
 			],
 			"properties": {
 				"ipConfigurations": [{
