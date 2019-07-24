@@ -40,7 +40,7 @@ stages:
   - job: azs_ocp_2masterlb_selfsignedcerts
     displayName: OCP with 2 Master LB and self signed certificates
     pool: $(azs_pool_name)
-    timeoutInMinutes: 180
+    timeoutInMinutes: 0
     variables:
       rg_name: ci_ocp_2_mlb_sscerts_$(local_id)
       keyvault_name: vault-2mlbsscerts-$(Build.BuildId)
