@@ -135,7 +135,7 @@
 		},
 		"openshiftAnsibleMinorVersion": {
 			"type": "string",
-			"defaultValue": "123",
+			"defaultValue": "129",
 			"metadata": {
 				"description": "Minor version of OpenShift ansible 3.11 to install on bastion"
 			}
