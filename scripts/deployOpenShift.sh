@@ -300,6 +300,10 @@ $ROUTINGCERTIFICATE
 $MASTERCERTIFICATE
 $PROXY
 
+# Workaround for "Control plane pods didn't come up"
+# https://access.redhat.com/solutions/3607721
+osm_etcd_image=registry.access.redhat.com/rhel7/etcd:3.2.22
+
 # Workaround for docker image failure
 # https://access.redhat.com/solutions/3480921
 oreg_url=registry.access.redhat.com/openshift3/ose-\${component}:\${version}
