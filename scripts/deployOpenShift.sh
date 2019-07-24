@@ -381,9 +381,11 @@ if [[ $AZUREDNSUSE == "true" ]]
 then
     export DOMAIN=$AZUREDNSZONE
     runuser -l $SUDOUSER -c "mkdir /tmp/openshift-manage-azuredns"
+    export NS1IP=$(host $AZUREDNSNS1 | awk '{ print $4 }')
+    export NS2IP=$(host $AZUREDNSNS2 | awk '{ print $4 }')
     cat > /tmp/openshift-manage-azuredns/azure-dns.conf <<EOF
-server=/$AZUREDNSZONE/$AZUREDNSNS1
-server=/$AZUREDNSZONE/$AZUREDNSNS2
+server=/$AZUREDNSZONE/$NS1IP
+server=/$AZUREDNSZONE/$NS2IP
 EOF
     cat > /tmp/openshift-manage-azuredns/playbook.yaml <<EOF
 - hosts: nodes
@@ -476,6 +478,8 @@ EOF
       setype: dnsmasq_etc_t
       mode: 0755
     become: true
+    notify:
+    - restart dnsmasq
 
   - name: Ensure additional hosts stanza is present in dnsmasq.conf
     lineinfile:
