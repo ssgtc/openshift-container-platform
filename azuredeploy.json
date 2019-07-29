@@ -167,7 +167,7 @@
 		"cnsInstanceCount": {
 			"type": "int",
 			"defaultValue": 4,
-			"allowedValues": [4, 5, 6],
+			"allowedValues": [3, 4, 6, 8],
 			"metadata": {
 				"description": "Number of OpenShift OCS nodes. 4 is the default per ref arch"
 			}
