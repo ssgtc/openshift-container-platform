@@ -556,12 +556,14 @@
 		"openshiftNodeHostname": "[concat(variables('namingInfix'), '-node')]",
 		"openshiftInfraHostname": "[concat(variables('namingInfix'), '-infra')]",
 		"openshiftCnsHostname": "[concat(variables('namingInfix'), '-cns')]",
+		"openshiftHAProxyHostname": "[concat(variables('namingInfix'), '-haproxy')]",
 		"newStorageAccountBastion": "[concat('bastion', uniqueString(concat(resourceGroup().id, 'bsa')))]",
 		"newStorageAccountMaster": "[concat('master', uniqueString(concat(resourceGroup().id, 'msa')))]",
 		"newStorageAccountInfra": "[concat('infra', uniqueString(concat(resourceGroup().id, 'isa')))]",
 		"newStorageAccountNodeOs": "[concat('nodeos', uniqueString(concat(resourceGroup().id, 'nodeossa')))]",
 		"newStorageAccountNodeData": "[concat('nodedata', uniqueString(concat(resourceGroup().id, 'nodedatasa')))]",
 		"newStorageAccountCns": "[concat('cns', uniqueString(concat(resourceGroup().id, 'csa')))]",
+		"newStorageAccountHAProxy": "[concat('haproxy', uniqueString(concat(resourceGroup().id, 'csa')))]",
 		"diagStorageAccount1": "[concat('diag1', uniqueString(concat(resourceGroup().id, 'dsa1')))]",
 		"diagStorageAccount2": "[concat('diag2', uniqueString(concat(resourceGroup().id, 'dsa2')))]",
 		"newStorageAccountRegistry": "[concat('registry', uniqueString(concat(resourceGroup().id, 'registry')))]",
@@ -607,6 +609,10 @@
 				"skuName": "[variables('vmSizesMap')[parameters('cnsVmSize')].storageAccountType]",
 				"skuTier": "[variables('vmSizesMap')[parameters('cnsVmSize')].storageAccountTier]"
 			},
+			"haproxy": {
+				"skuName": "[variables('vmSizesMap')[variables('haproxyVmSize')].storageAccountType]",
+				"skuTier": "[variables('vmSizesMap')[variables('haproxyVmSize')].storageAccountTier]"
+			},
 			"web": {
 				"skuName": "Standard_RAGRS",
 				"skuTier": "Standard"
@@ -635,12 +641,15 @@
 		"managedNodeDataUri": "[variables('diagStorageAccount1')]",
 		"unmanagedCnsUri": "[variables('newStorageAccountCns')]",
 		"managedCnsUri": "[variables('diagStorageAccount1')]",
+		"unmanagedHAProxyUri": "[variables('newStorageAccountHAProxy')]",
+		"managedHAProxyUri": "[variables('diagStorageAccount1')]",
 		"bastionUri": "[concat(parameters('storageKind'), 'BastionUri')]",
 		"masterUri": "[concat(parameters('storageKind'), 'MasterUri')]",
 		"infraUri": "[concat(parameters('storageKind'), 'InfraUri')]",
 		"nodeOsUri": "[concat(parameters('storageKind'), 'NodeOsUri')]",
 		"nodeDataUri": "[concat(parameters('storageKind'), 'NodeDataUri')]",
 		"cnsUri": "[concat(parameters('storageKind'), 'CnsUri')]",
+		"haproxyUri":  "[concat(parameters('storageKind'), 'HAProxyUri')]",
 		"bastionPublicIp": "bastionpublicip",
 		"bastionPublicIpDnsLabel": "[concat('bastiondns', uniqueString(resourceGroup().id))]",
 		"infraLbPublicIpDnsLabel": "[concat('infradns', uniqueString(concat(resourceGroup().id, 'infra')))]",
@@ -732,11 +741,16 @@
 		"openshiftDeploymentScriptFileName": "deployOpenShift.sh",
 		"clusterNodeDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/galleryclusternode.json')]",
 		"clusterCnsNodeDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/galleryclustercnsnode.json')]",
+		"clusterHAProxyNodeDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/galleryclusterhaproxynode.json')]",
 		"basicDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/gallerybasic.json')]",
 		"openshiftDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/openshiftdeploy.json')]",
 		"bastionPrepTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/bastionprep.json')]",
 		"masterPrepTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/masterprep.json')]",
 		"nodePrepTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/nodeprep.json')]",
+
+		"haproxyVmSize": "Standard_DS2_v2",
+		"haproxyInstanceCount": 2,
+
 		"vmSizesMap": {
 			"Standard_D2": {
 				"storageAccountType": "Standard_LRS",
@@ -1284,6 +1298,33 @@
 				}]
 			}
 		}, {
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"name": "[concat(variables('openshiftHAProxyHostname'), '-nsg')]",
+			"location": "[parameters('location')]",
+			"tags": {
+				"displayName": "HAProxyNSG",
+				"provider": "[variables('redHatTags').provider]",
+				"app": "[variables('redHatTags').app]",
+				"version": "[variables('redHatTags').version]",
+				"platform": "[variables('redHatTags').platform]"
+			},
+			"properties": {
+				"securityRules": [{
+					"name": "allowHTTPS_all",
+					"properties": {
+						"description": "Allow HTTPS connections from all locations",
+						"protocol": "Tcp",
+						"sourcePortRange": "*",
+						"destinationPortRange": "443",
+						"sourceAddressPrefix": "*",
+						"destinationAddressPrefix": "*",
+						"access": "Allow",
+						"priority": 200,
+						"direction": "Inbound"
+					}
+				}]
+			}
+		},{
 			"condition": "[equals(parameters('virtualNetworkNewOrExisting'), 'new')]",
 			"type": "Microsoft.Network/virtualNetworks",
 			"name": "[parameters('virtualNetworkName')]",
@@ -1355,6 +1396,21 @@
 			},
 			"sku": {
 				"name": "[variables('storageSkuObject').cns.skuName]"
+			}
+		}, {
+			"type": "Microsoft.Storage/storageAccounts",
+			"name": "[variables('newStorageAccountHAProxy')]",
+			"location": "[parameters('location')]",
+			"kind": "Storage",
+			"tags": {
+				"displayName": "HAProxyStorageAccount",
+				"provider": "[variables('redHatTags').provider]",
+				"app": "[variables('redHatTags').app]",
+				"version": "[variables('redHatTags').version]",
+				"platform": "[variables('redHatTags').platform]"
+			},
+			"sku": {
+				"name": "[variables('storageSkuObject').haproxy.skuName]"
 			}
 		}, {
 			"type": "Microsoft.Network/publicIPAddresses",
@@ -1445,6 +1501,24 @@
 			},
 			"tags": {
 				"displayName": "CnsAvailabilitySet",
+				"provider": "[variables('redHatTags').provider]",
+				"app": "[variables('redHatTags').app]",
+				"version": "[variables('redHatTags').version]",
+				"platform": "[variables('redHatTags').platform]"
+			}
+		},{
+			"type": "Microsoft.Compute/availabilitySets",
+			"name": "haproxyavailabilityset",
+			"location": "[parameters('location')]",
+			"sku": {
+				"name": "[variables(variables('availabilitySetSku'))]"
+			},
+			"properties": {
+				"platformFaultDomainCount": "[variables(variables('platformFaultDomainCount'))]",
+				"platformUpdateDomainCount": "5"
+			},
+			"tags": {
+				"displayName": "HAProxyAvailabilitySet",
 				"provider": "[variables('redHatTags').provider]",
 				"app": "[variables('redHatTags').app]",
 				"version": "[variables('redHatTags').version]",
@@ -1801,6 +1875,40 @@
 				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('nodeVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
 				"networkSecurityGroup": {
 					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('openshiftNodeHostname'), '-nsg'))]"
+				}
+			}
+		},{
+			"type": "Microsoft.Network/networkInterfaces",
+			"name": "[concat(variables('openshiftHAProxyHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic')]",
+			"location": "[parameters('location')]",
+			"tags": {
+				"displayName": "OpenShiftHAProxyNetworkInterfaces",
+				"provider": "[variables('redHatTags').provider]",
+				"app": "[variables('redHatTags').app]",
+				"version": "[variables('redHatTags').version]",
+				"platform": "[variables('redHatTags').platform]"
+			},
+			"dependsOn": [
+				"[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
+				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftHAProxyHostname'), '-nsg')]"
+			],
+			"copy": {
+				"name": "haProxyNicLoop",
+				"count": "[variables('haproxyInstanceCount')]"
+			},
+			"properties": {
+				"ipConfigurations": [{
+					"name": "[concat(variables('openshiftHAProxyHostname'), padLeft(add(copyIndex(), 1), 2, '0'), 'ipconfig')]",
+					"properties": {
+						"privateIPAllocationMethod": "Dynamic",
+						"subnet": {
+							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
+						}
+					}
+				}],
+				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[variables('haproxyVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
+				"networkSecurityGroup": {
+					"id": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('openshiftHAProxyHostname'), '-nsg'))]"
 				}
 			}
 		}, {
@@ -2235,6 +2343,99 @@
 					},
 					"newStorageAccountData": {
 						"value": "[variables('newStorageAccountCns')]"
+					},
+					"diagStorageAccount": {
+						"value": "[variables('diagStorageAccount1')]"
+					},
+					"apiVersionStorage": {
+						"value": "[variables('apiVersionStorage')]"
+					},
+					"apiVersionCompute": {
+						"value": "[variables('apiVersionCompute')]"
+					},
+					"imageReference": {
+						"value": "[variables('imageReference')]"
+					},
+					"redHatTags": {
+						"value": "[variables('redHatTags')]"
+					}
+				}
+			}
+		},{
+			"type": "Microsoft.Resources/deployments",
+			"name": "[concat('haproxyVmDeployment', padLeft(add(copyIndex(), 1), 2, '0'))]",
+			"dependsOn": [
+				"[resourceId('Microsoft.Storage/storageAccounts', variables('diagStorageAccount1'))]",
+				"haproxyNicLoop",
+				"haproxyavailabilityset"
+			],
+			"copy": {
+				"name": "haproxyVmLoop",
+				"count": "[variables('haproxyInstanceCount')]"
+			},
+			"properties": {
+				"mode": "Incremental",
+				"templateLink": {
+					"uri": "[variables('clusterHAProxyNodeDeploymentTemplateUrl')]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"location": {
+						"value": "[parameters('location')]"
+					},
+					"sshKeyPath": {
+						"value": "[variables('sshKeyPath')]"
+					},
+					"sshPublicKey": {
+						"value": "[parameters('sshPublicKey')]"
+					},
+					"osDiskSize": {
+						"value": "[parameters('osDiskSize')]"
+					},
+					"dataDiskSize": {
+						"value": "[parameters('dataDiskSize')]"
+					},
+					"adminUsername": {
+						"value": "[parameters('adminUsername')]"
+					},
+					"vmSize": {
+						"value": "[variables('haproxyVmSize')]"
+					},
+					"osImageType": {
+						"value": "[parameters('osImageType')]"
+					},
+					"marketplaceOsImage": {
+						"value": "[parameters('marketplaceOsImage')]"
+					},
+					"marketplacePlan": {
+						"value": "[variables('marketplacePlan')]"
+					},
+					"availabilitySet": {
+						"value": "haproxyavailabilityset"
+					},
+					"hostName": {
+						"value": "[concat(variables('openshifthaproxyHostname'), padLeft(add(copyIndex(), 1), 2, '0'))]"
+					},
+					"unmanagedOsDiskUri": {
+						"value": "[reference(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables(variables('haproxyUri'))), variables('apiVersionStorage')).primaryEndpoints['blob']]"
+					},
+					"unmanagedDataDiskUri": {
+						"value": "[reference(resourceId(resourceGroup().name, 'Microsoft.Storage/storageAccounts', variables(variables('haproxyUri'))), variables('apiVersionStorage')).primaryEndpoints['blob']]"
+					},
+					"role": {
+						"value": "haproxynode"
+					},
+					"vmStorageType": {
+						"value": "[variables('vmSizesMap')[variables('haproxyVmSize')].storageAccountType]"
+					},
+					"storageKind": {
+						"value": "[parameters('storageKind')]"
+					},
+					"newStorageAccountOs": {
+						"value": "[variables('newStorageAccountHAProxy')]"
+					},
+					"newStorageAccountData": {
+						"value": "[variables('newStorageAccountHAProxy')]"
 					},
 					"diagStorageAccount": {
 						"value": "[variables('diagStorageAccount1')]"
