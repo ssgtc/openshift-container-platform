@@ -202,7 +202,7 @@
 			},{
 				"name": "[concat(parameters('hostName'), '-gluster-disk3')]",
 				"diskSizeGB": "[parameters('glusterDiskSize')]",
-				"lun": 3,
+				"lun": 4,
 				"managedDisk": {
 					"storageAccountType": "[parameters('vmStorageType')]"
 				},
@@ -210,7 +210,7 @@
 			},{
 				"name": "[concat(parameters('hostName'), '-gluster-disk4')]",
 				"diskSizeGB": "[parameters('glusterDiskSize')]",
-				"lun": 3,
+				"lun": 5,
 				"managedDisk": {
 					"storageAccountType": "[parameters('vmStorageType')]"
 				},
@@ -218,7 +218,7 @@
 			},{
 				"name": "[concat(parameters('hostName'), '-gluster-disk5')]",
 				"diskSizeGB": "[parameters('glusterDiskSize')]",
-				"lun": 3,
+				"lun": 6,
 				"managedDisk": {
 					"storageAccountType": "[parameters('vmStorageType')]"
 				},
@@ -226,7 +226,7 @@
 			},{
 				"name": "[concat(parameters('hostName'), '-gluster-disk6')]",
 				"diskSizeGB": "[parameters('glusterDiskSize')]",
-				"lun": 3,
+				"lun": 7,
 				"managedDisk": {
 					"storageAccountType": "[parameters('vmStorageType')]"
 				},
