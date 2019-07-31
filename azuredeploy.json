@@ -2366,7 +2366,7 @@
 			"name": "[concat('haproxyVmDeployment', padLeft(add(copyIndex(), 1), 2, '0'))]",
 			"dependsOn": [
 				"[resourceId('Microsoft.Storage/storageAccounts', variables('diagStorageAccount1'))]",
-				"haproxyNicLoop",
+				"haProxyNicLoop",
 				"haproxyavailabilityset"
 			],
 			"copy": {
@@ -2575,6 +2575,27 @@
 			  "ARecords": [
 				{
 				  "ipv4Address": "[if(equals(parameters('enableCNS'), 'true'), reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftCnsHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic'), variables('apiVersionNetworkInterface')).ipConfigurations[0].properties.privateIPAddress, '1.1.1.1')]"
+				}
+			  ]
+			}
+		},{
+			"condition": "[parameters('useAzureDns')]",
+			"type": "Microsoft.Network/dnszones/a",
+			"name": "[concat(parameters('azureZoneName'), '/', concat(variables('openshiftHAProxyHostname'), padLeft(add(copyIndex(), 1), 2, '0')))]",
+			"location": "global",
+			"dependsOn": [
+			  "[parameters('azureZoneName')]",
+			  "haProxyNicLoop"
+			],
+			"copy": {
+				"name": "haproxyARecordLoop",
+				"count": "[variables('haproxyInstanceCount')]"
+			},
+			"properties": {
+			  "TTL": 60,
+			  "ARecords": [
+				{
+					"ipv4Address": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftHAProxyHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic'), variables('apiVersionNetworkInterface')).ipConfigurations[0].properties.privateIPAddress]"
 				}
 			  ]
 			}
