@@ -199,6 +199,38 @@
 					"storageAccountType": "[parameters('vmStorageType')]"
 				},
 				"createOption": "Empty"
+			},{
+				"name": "[concat(parameters('hostName'), '-gluster-disk3')]",
+				"diskSizeGB": "[parameters('glusterDiskSize')]",
+				"lun": 3,
+				"managedDisk": {
+					"storageAccountType": "[parameters('vmStorageType')]"
+				},
+				"createOption": "Empty"
+			},{
+				"name": "[concat(parameters('hostName'), '-gluster-disk4')]",
+				"diskSizeGB": "[parameters('glusterDiskSize')]",
+				"lun": 3,
+				"managedDisk": {
+					"storageAccountType": "[parameters('vmStorageType')]"
+				},
+				"createOption": "Empty"
+			},{
+				"name": "[concat(parameters('hostName'), '-gluster-disk5')]",
+				"diskSizeGB": "[parameters('glusterDiskSize')]",
+				"lun": 3,
+				"managedDisk": {
+					"storageAccountType": "[parameters('vmStorageType')]"
+				},
+				"createOption": "Empty"
+			},{
+				"name": "[concat(parameters('hostName'), '-gluster-disk6')]",
+				"diskSizeGB": "[parameters('glusterDiskSize')]",
+				"lun": 3,
+				"managedDisk": {
+					"storageAccountType": "[parameters('vmStorageType')]"
+				},
+				"createOption": "Empty"
 			}]
 		},
 		"unmanagedStorageProfile": {
