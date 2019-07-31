@@ -664,6 +664,9 @@
 		"masterLbHttpProbeId": "[concat(variables('masterLbId'),'/probes/httpProbe')]",
 		"masterLbHttpsProbeId": "[concat(variables('masterLbId'),'/probes/httpsProbe')]",
 
+		"openshiftMasterAPI1PublicIpDnsLabel": "[concat('masterapi1', uniqueString(concat(resourceGroup().id, 'masterapi1')))]",
+		"openshiftMasterAPI2PublicIpDnsLabel": "[concat('masterapi2', uniqueString(concat(resourceGroup().id, 'masterapi2')))]",
+
 		"deployMasterAPIPrivateLb": "[equals(parameters('masterClusterType'), 'public')]",
 		"masterPrivateLoadBalancerName": "[concat(variables('openshiftMasterHostname'), 'privateLb')]",
 		"masterPrivateLbId": "[resourceId('Microsoft.Network/loadBalancers', variables('masterPrivateLoadBalancerName'))]",
@@ -1465,6 +1468,42 @@
 					"domainNameLabel": "[variables('openshiftMasterPublicIpDnsLabel')]"
 				}
 			}
+		},{
+			"condition": "[equals(parameters('masterClusterType'), 'public')]",
+			"type": "Microsoft.Network/publicIPAddresses",
+			"name": "[variables('openshiftMasterAPI1PublicIpDnsLabel')]",
+			"location": "[parameters('location')]",
+			"tags": {
+				"displayName": "OpenShiftMasterAPI1PublicIP",
+				"provider": "[variables('redHatTags').provider]",
+				"app": "[variables('redHatTags').app]",
+				"version": "[variables('redHatTags').version]",
+				"platform": "[variables('redHatTags').platform]"
+			},
+			"properties": {
+				"publicIPAllocationMethod": "Static",
+				"dnsSettings": {
+					"domainNameLabel": "[variables('openshiftMasterAPI1PublicIpDnsLabel')]"
+				}
+			}
+		},{
+			"condition": "[equals(parameters('masterClusterType'), 'public')]",
+			"type": "Microsoft.Network/publicIPAddresses",
+			"name": "[variables('openshiftMasterAPI2PublicIpDnsLabel')]",
+			"location": "[parameters('location')]",
+			"tags": {
+				"displayName": "OpenShiftMasterAPI2PublicIP",
+				"provider": "[variables('redHatTags').provider]",
+				"app": "[variables('redHatTags').app]",
+				"version": "[variables('redHatTags').version]",
+				"platform": "[variables('redHatTags').platform]"
+			},
+			"properties": {
+				"publicIPAllocationMethod": "Static",
+				"dnsSettings": {
+					"domainNameLabel": "[variables('openshiftMasterAPI2PublicIpDnsLabel')]"
+				}
+			}
 		}, {
 			"type": "Microsoft.Compute/availabilitySets",
 			"name": "[variables('availabilitySetArray')[copyIndex()].name]",
@@ -1562,57 +1601,6 @@
 						"backendPort": 443,
 						"probe": {
 							"id": "[variables('masterLbHttpsProbeId')]"
-						}
-					}
-				}],
-				"probes": [{
-					"name": "httpsProbe",
-					"properties": {
-						"protocol": "Tcp",
-						"port": 443,
-						"intervalInSeconds": 5,
-						"numberOfProbes": 2
-					}
-				}]
-			}
-		},{
-			"condition": "[variables('deployMasterAPIPrivateLb')]",
-			"type": "Microsoft.Network/loadBalancers",
-			"name": "[variables('masterPrivateLoadBalancerName')]",
-			"location": "[parameters('location')]",
-			"tags": {
-				"displayName": "OpenShiftMasterPrivateLB",
-				"provider": "[variables('redHatTags').provider]",
-				"app": "[variables('redHatTags').app]",
-				"version": "[variables('redHatTags').version]",
-				"platform": "[variables('redHatTags').platform]"
-			},
-			"dependsOn": [
-				"[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
-			],
-			"properties": {
-				"frontendIPConfigurations": [{
-					"name": "LoadBalancerFrontEnd",
-					"properties": "[variables('privateMasterFrontEndIpConfigurationProperties')]"
-				}],
-				"backendAddressPools": [{
-					"name": "loadBalancerBackEnd"
-				}],
-				"loadBalancingRules": [{
-					"name": "OpenShiftAPI",
-					"properties": {
-						"frontendIPConfiguration": {
-							"id": "[variables('masterPrivateLbFrontEndConfigId')]"
-						},
-						"backendAddressPool": {
-							"id": "[variables('masterPrivateLbBackendPoolId')]"
-						},
-						"protocol": "Tcp",
-						"idleTimeoutInMinutes": 30,
-						"frontendPort": 443,
-						"backendPort": 443,
-						"probe": {
-							"id": "[variables('masterPrivateLbHttpsProbeId')]"
 						}
 					}
 				}],
@@ -1747,8 +1735,7 @@
 			"dependsOn": [
 				"[concat('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]",
 				"[concat('Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName'))]",
-				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftMasterHostname'), '-nsg')]",
-				"[if(variables('deployMasterAPIPrivateLb'), concat('Microsoft.Network/loadBalancers/', variables('masterPrivateLoadBalancerName')), concat('Microsoft.Network/loadBalancers/', variables('masterLoadBalancerName')))]"
+				"[concat('Microsoft.Network/networkSecurityGroups/', variables('openshiftMasterHostname'), '-nsg')]"
 			],
 			"copy": {
 				"name": "masterNicLoop",
@@ -1762,7 +1749,7 @@
 						"subnet": {
 							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
 						},
-						"loadBalancerBackendAddressPools": "[if(variables('deployMasterAPIPrivateLb'), variables('masterLbBackendAddressPoolWithTwoIds'), variables('masterLbBackendAddressPoolWithOneId'))]"
+						"loadBalancerBackendAddressPools": "[variables('masterLbBackendAddressPoolWithOneId')]"
 					}
 				}],
 				"enableAcceleratedNetworking": "[if(equals(variables('vmSizesMap')[parameters('masterVmSize')].acceleratedNetworking, 'true'), 'true', 'false')]",
@@ -1901,6 +1888,9 @@
 					"name": "[concat(variables('openshiftHAProxyHostname'), padLeft(add(copyIndex(), 1), 2, '0'), 'ipconfig')]",
 					"properties": {
 						"privateIPAllocationMethod": "Dynamic",
+						"publicIPAddress": {
+							"id": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/', resourceGroup().name, '/providers/Microsoft.Network/publicIPAddresses/',  variables(concat('openshiftMasterAPI', add(copyIndex(), 1),'PublicIpDnsLabel')))]"
+						},
 						"subnet": {
 							"id": "[if(equals(parameters('virtualNetworkNewOrExisting'), 'new'), resourceId(parameters('virtualNetworkResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets/', parameters('virtualNetworkName'), parameters('masterSubnetName')), parameters('existingMasterSubnetReference'))]"
 						}
@@ -2538,22 +2528,6 @@
 			  "ARecords": [
 				{
 				  "ipv4Address": "[reference(concat('Microsoft.Network/networkInterfaces/', variables('openshiftNodeHostname'), padLeft(add(copyIndex(), 1), 2, '0'), '-nic'), variables('apiVersionNetworkInterface')).ipConfigurations[0].properties.privateIPAddress]"
-				}
-			  ]
-			}
-		}, {
-			"condition": "[and(parameters('useAzureDns'), variables('deployMasterAPIPrivateLb'))]",
-			"type": "Microsoft.Network/dnszones/a",
-			"name": "[concat(parameters('azureZoneName'), '/',parameters('masterAPIDns'))]",
-			"location": "global",
-			"dependsOn": [
-			  "[parameters('azureZoneName')]"
-			],
-			"properties": {
-			  "TTL": 60,
-			  "ARecords": [
-				{
-				  "ipv4Address": "[parameters('masterPrivateClusterIp')]"
 				}
 			  ]
 			}
