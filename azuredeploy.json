@@ -586,7 +586,7 @@
 		"managedAvailabilitySetSku": "Aligned",
 		"availabilitySetSku": "[concat(parameters('storageKind'), 'AvailabilitySetSku')]",
 		"unmanagedPlatformFaultDomainCount": 3,
-		"managedPlatformFaultDomainCount": 2,
+		"managedPlatformFaultDomainCount": 3,
 		"platformFaultDomainCount": "[concat(parameters('storageKind'), 'PlatformFaultDomainCount')]",
 		"storageSkuObject": {
 			"bastion": {
