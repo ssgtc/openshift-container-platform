@@ -1595,7 +1595,7 @@
 							"id": "[variables('masterLbBackendPoolId')]"
 						},
 						"protocol": "Tcp",
-						"loadDistribution": "SourceIP",
+						"loadDistribution": "Default",
 						"idleTimeoutInMinutes": 30,
 						"frontendPort": 443,
 						"backendPort": 443,
