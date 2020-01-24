@@ -1148,19 +1148,6 @@
 			},
 			"properties": {
 				"securityRules": [{
-					"name": "allowSSHin_all",
-					"properties": {
-						"description": "Allow SSH in from all locations",
-						"protocol": "Tcp",
-						"sourcePortRange": "*",
-						"destinationPortRange": "22",
-						"sourceAddressPrefix": "*",
-						"destinationAddressPrefix": "*",
-						"access": "Allow",
-						"priority": 100,
-						"direction": "Inbound"
-					}
-				}, {
 					"name": "allowHTTPS_all",
 					"properties": {
 						"description": "Allow HTTPS connections from all locations",
@@ -1188,19 +1175,6 @@
 			},
 			"properties": {
 				"securityRules": [{
-					"name": "allowSSHin_all",
-					"properties": {
-						"description": "Allow SSH in from all locations",
-						"protocol": "Tcp",
-						"sourcePortRange": "*",
-						"destinationPortRange": "22",
-						"sourceAddressPrefix": "*",
-						"destinationAddressPrefix": "*",
-						"access": "Allow",
-						"priority": 100,
-						"direction": "Inbound"
-					}
-				}, {
 					"name": "allowHTTPSIn_all",
 					"properties": {
 						"description": "Allow HTTPS connections from all locations",
@@ -1241,20 +1215,7 @@
 				"platform": "[variables('redHatTags').platform]"
 			},
 			"properties": {
-				"securityRules": [{
-					"name": "allowSSHin_all",
-					"properties": {
-						"description": "Allow SSH in from all locations",
-						"protocol": "Tcp",
-						"sourcePortRange": "*",
-						"destinationPortRange": "22",
-						"sourceAddressPrefix": "*",
-						"destinationAddressPrefix": "*",
-						"access": "Allow",
-						"priority": 100,
-						"direction": "Inbound"
-					}
-				}]
+				"securityRules": []
 			}
 		}, {
 			"type": "Microsoft.Network/networkSecurityGroups",
@@ -1269,19 +1230,6 @@
 			},
 			"properties": {
 				"securityRules": [{
-					"name": "allowSSHin_all",
-					"properties": {
-						"description": "Allow SSH in from all locations",
-						"protocol": "Tcp",
-						"sourcePortRange": "*",
-						"destinationPortRange": "22",
-						"sourceAddressPrefix": "*",
-						"destinationAddressPrefix": "*",
-						"access": "Allow",
-						"priority": 100,
-						"direction": "Inbound"
-					}
-				}, {
 					"name": "allowHTTPS_all",
 					"properties": {
 						"description": "Allow HTTPS connections from all locations",
