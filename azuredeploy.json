@@ -188,6 +188,14 @@
 				"description": "Size of data disk in GB for Docker volume"
 			}
 		},
+		"etcdDiskSize": {
+			"type": "int",
+			"defaultValue": 128,
+			"allowedValues": [32, 64, 128, 256, 512, 1024, 2048],
+			"metadata": {
+				"description": "Size of etcd disk in GB for Masters"
+			}
+		},
 		"cnsGlusterDiskSize": {
 			"type": "int",
 			"defaultValue": 128,
@@ -745,6 +753,7 @@
 		"clusterNodeDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/galleryclusternode.json')]",
 		"clusterCnsNodeDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/galleryclustercnsnode.json')]",
 		"clusterHAProxyNodeDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/galleryclusterhaproxynode.json')]",
+		"clusterMasterNodeDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/galleryclustermasternode.json')]",
 		"basicDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/gallerybasic.json')]",
 		"openshiftDeploymentTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/openshiftdeploy.json')]",
 		"bastionPrepTemplateUrl": "[concat(parameters('_artifactsLocation'), '/nested/bastionprep.json')]",
@@ -1989,7 +1998,7 @@
 			"properties": {
 				"mode": "Incremental",
 				"templateLink": {
-					"uri": "[variables('clusterNodeDeploymentTemplateUrl')]",
+					"uri": "[variables('clusterMasterNodeDeploymentTemplateUrl')]",
 					"contentVersion": "1.0.0.0"
 				},
 				"parameters": {
@@ -2007,6 +2016,9 @@
 					},
 					"dataDiskSize": {
 						"value": "[parameters('dataDiskSize')]"
+					},
+					"etcdDiskSize": {
+						"value": "[parameters('etcdDiskSize')]"
 					},
 					"adminUsername": {
 						"value": "[parameters('adminUsername')]"
